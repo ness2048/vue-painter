@@ -20,6 +20,8 @@
 </template>
 
 <script lang="ts">
+import { CanvasImage } from '@/core/painting/canvas-image';
+import { PaintCanvas } from '@/core/painting/paint-canvas';
 import { Options, Vue } from 'vue-class-component';
 
 @Options({
@@ -28,114 +30,50 @@ import { Options, Vue } from 'vue-class-component';
   },
 })
 export default class MainCanvas extends Vue {
-  canvasMode = 'pen';
-
   canvas!: HTMLCanvasElement;
 
   context: CanvasRenderingContext2D | null = null;
 
-  isDrag = false;
+  canvasImage!: CanvasImage;
+
+  paintCanvas!: PaintCanvas;
 
   mounted() {
     this.canvas = document.getElementById('main-canvas') as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d');
-    this.pen();
-  }
-
-  pointerDown(e: PointerEvent) {
-    // console.log('pointerDown', e);
-    this.dragStart(e);
-  }
-
-  pointerMove(e: PointerEvent) {
-    // console.log('pointerMove', e);
-    this.draw(e);
-  }
-
-  pointerUp(e: PointerEvent) {
-    // console.log('pointerUp', e);
-    this.dragEnd();
-  }
-
-  // 描画
-  draw(e: PointerEvent) {
-    const x = Math.floor(e.offsetX);
-    const y = Math.floor(e.offsetY);
-
-    if (!this.isDrag) {
-      return;
-    }
 
     if (this.context) {
-      // ブラシの設定
-      this.context.fillStyle = 'rgba(0, 0, 0, 0)';
-      this.context.strokeStyle = `rgba(0,0,0,${e.pressure})`;
-      this.context.lineWidth = e.pressure * 50;
+      this.canvasImage = new CanvasImage(this.canvas.width, this.canvas.height);
+      this.paintCanvas = new PaintCanvas(this.context, this.canvasImage);
 
-      // ストロークの描画
-      this.context.lineTo(x, y);
-      this.context.stroke();
-      this.context.beginPath();
-      this.context.moveTo(x, y);
+      // this.context.beginPath();
+      // this.context.arc(100, 100, 50, 0, (360 * Math.PI) / 180);
+      // this.context.fillStyle = 'red';
+      // this.context.fill();
+      // this.context.strokeStyle = 'purple';
+      // this.context.lineWidth = 8;
+      // this.context.stroke();
     }
   }
 
-  // 描画開始（mousedown）
-  dragStart(e: PointerEvent) {
-    const x = e.offsetX;
-    const y = e.offsetY;
-
-    if (this.context) {
-      this.context.beginPath();
-      this.context.moveTo(x, y);
-    }
-
-    this.isDrag = true;
+  pointerDown(pe: PointerEvent) {
+    console.log('pointerDown', pe);
+    this.paintCanvas.update(pe);
+    pe.preventDefault();
   }
 
-  // 描画終了（mouseup, mouseout）
-  dragEnd() {
-    if (this.context) {
-      this.context.closePath();
-    }
-    this.isDrag = false;
+  pointerMove(pe: PointerEvent) {
+    // console.log('pointerMove', pe);
+    this.paintCanvas.update(pe);
+    this.paintCanvas.draw();
+    pe.preventDefault();
   }
 
-  /**
-   * キャンバスを消去します。
-   */
-  clear() {
-    if (this.context) {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-  }
-
-  // ペンモード
-  pen() {
-    // カーソル変更
-    this.canvasMode = 'pen';
-
-    // 描画設定
-    if (this.context) {
-      this.context.lineCap = 'round';
-      this.context.lineJoin = 'round';
-    }
-  }
-
-  /**
-   * 消しゴムモード
-   */
-  erase() {
-    // カーソル変更
-    this.canvasMode = 'eraser';
-
-    // 描画設定
-    if (this.context) {
-      this.context.lineCap = 'square';
-      this.context.lineJoin = 'round';
-      this.context.lineWidth = 30;
-      this.context.strokeStyle = '#FFFFFF';
-    }
+  pointerUp(pe: PointerEvent) {
+    console.log('pointerUp', pe);
+    this.paintCanvas.update(pe);
+    this.paintCanvas.draw();
+    pe.preventDefault();
   }
 }
 </script>
