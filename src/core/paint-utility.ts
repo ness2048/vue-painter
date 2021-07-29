@@ -42,7 +42,6 @@ export class PaintUtility {
     // context.strokeStyle = 'purple';
     // context.lineWidth = 0;
     // context.stroke();
-    console.log('drawPoint-brush', brush, p);
 
     // TODO brush.color を実装すること。
     // const spriteBatch.Draw(brush.BrushTexture, destRect, srcRect, brush.Color);

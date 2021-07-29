@@ -126,7 +126,7 @@ export class PaintCanvas {
   }
 
   public update(pe: PointerEvent): boolean {
-    this.paintTouchPanel.updateGestureState(pe);
+    this.paintTouchPanel.update(pe);
 
     let ret = false;
 
@@ -191,6 +191,46 @@ export class PaintCanvas {
     return ret;
   }
 
+  public clear() {
+    // キャンバス消去の履歴を追加する。
+    // const historyItem = new ClearAllLayersHistoryItem();
+    // historyItem.Layers = new List<RenderTarget2D>();
+    // using(SpriteBatch sb = new SpriteBatch(gd))
+    // {
+    //   foreach(var layer in this.canvasImageValue.textures)
+    //   {
+    //     // すべてのレイヤーの内容を履歴にコピーする。
+    //     var tex = new RenderTarget2D(this.GraphicsDevice, this.CanvasImage.Width,
+    //    this.CanvasImage.Height,
+    //       false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+    //     gd.SetRenderTarget(tex);
+    //     sb.Begin();
+    //     sb.Draw(layer, Vector2.Zero, Color.White);
+    //     sb.End();
+
+    //     historyItem.Layers.Add(tex);
+    //   }
+    // }
+    // CanvasHistoryManager.Instance.Add(historyItem);
+
+    // すべてのレイヤーの内容を消去する。
+    for (let i = 0; i < this.canvasImageValue.textures.length; i++) {
+      const layer = this.canvasImageValue.textures[i];
+      const ctx = layer.getContext('2d');
+
+      if (!ctx) {
+        break;
+      }
+
+      if (i === 0) {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, layer.width, layer.height); // 背景レイヤーは白色で塗りつぶす。
+      } else {
+        ctx.clearRect(0, 0, layer.width, layer.height); // その他のレイヤーは黒の透明で塗りつぶす。
+      }
+    }
+  }
+
   private updateStroke(gs: PaintGestureSample): void {
     this.strokeQueue.push(gs);
   }
@@ -251,7 +291,7 @@ export class PaintCanvas {
   }
 
   private onFreeDrag(gs: PaintGestureSample) {
-    console.log('onFreeDrag', gs);
+    // console.log('onFreeDrag', gs);
     const bp = this.toBrushPoint(gs);
     if (this.isDraging === false) {
       // まだドラッグが開始されていなかった場合は最初のポイントを描画する。

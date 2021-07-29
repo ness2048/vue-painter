@@ -41,7 +41,7 @@ export class BrushRenderer {
    * @param p 描画する位置。
    */
   public drawPoint(p: BrushPoint) {
-    console.log('drawPoint', p);
+    console.log('drawPoint');
     this.clearRenderdPoints();
     PaintUtility.drawPoint(this.context, this.brushValue, p);
     this.addRenderdPoint(p);

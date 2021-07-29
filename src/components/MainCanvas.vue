@@ -30,6 +30,8 @@ import { Options, Vue } from 'vue-class-component';
   },
 })
 export default class MainCanvas extends Vue {
+  canvasMode = 'pen';
+
   canvas!: HTMLCanvasElement;
 
   context: CanvasRenderingContext2D | null = null;
@@ -45,35 +47,48 @@ export default class MainCanvas extends Vue {
     if (this.context) {
       this.canvasImage = new CanvasImage(this.canvas.width, this.canvas.height);
       this.paintCanvas = new PaintCanvas(this.context, this.canvasImage);
-
-      // this.context.beginPath();
-      // this.context.arc(100, 100, 50, 0, (360 * Math.PI) / 180);
-      // this.context.fillStyle = 'red';
-      // this.context.fill();
-      // this.context.strokeStyle = 'purple';
-      // this.context.lineWidth = 8;
-      // this.context.stroke();
     }
+
+    window.requestAnimationFrame(this.onDraw);
   }
 
   pointerDown(pe: PointerEvent) {
-    console.log('pointerDown', pe);
     this.paintCanvas.update(pe);
     pe.preventDefault();
   }
 
   pointerMove(pe: PointerEvent) {
-    // console.log('pointerMove', pe);
     this.paintCanvas.update(pe);
-    this.paintCanvas.draw();
     pe.preventDefault();
   }
 
   pointerUp(pe: PointerEvent) {
-    console.log('pointerUp', pe);
     this.paintCanvas.update(pe);
-    this.paintCanvas.draw();
     pe.preventDefault();
+  }
+
+  clear() {
+    this.paintCanvas.clear();
+  }
+
+  readonly FPS = 60;
+
+  frameTime = 1 / this.FPS;
+
+  prevTimeStamp = 0;
+
+  onDraw(timestamp: number) {
+    const elapsed = (timestamp - this.prevTimeStamp) / 1000;
+    if (elapsed <= this.frameTime) {
+      window.requestAnimationFrame(this.onDraw);
+      return;
+    }
+
+    this.prevTimeStamp = timestamp;
+
+    this.paintCanvas.draw();
+
+    window.requestAnimationFrame(this.onDraw);
   }
 }
 </script>

@@ -18,7 +18,7 @@ export class CanvasImage {
 
   private thumbnailDataValue?: ImageData;
 
-  private texturesValue: CanvasImageSource[] = [];
+  private texturesValue: HTMLCanvasElement[] = [];
   // #endregion プライベート フィールド
 
   // #region プロパティ
@@ -58,14 +58,14 @@ export class CanvasImage {
     this.imageInfo.selectedLayerIndex = value;
   }
 
-  public get selectedLayerTexture(): CanvasImageSource | undefined {
+  public get selectedLayerTexture(): HTMLCanvasElement | undefined {
     if (this.selectedLayerIndex === 0) {
       return undefined;
     }
     return this.textures[this.selectedLayerIndex];
   }
 
-  public get textures(): CanvasImageSource[] {
+  public get textures(): HTMLCanvasElement[] {
     return this.texturesValue;
   }
 
@@ -76,7 +76,6 @@ export class CanvasImage {
   public get layerOpacities(): number[] {
     return this.imageInfo.layerOpacities;
   }
-
   // #endregion プロパティ
 
   // #region 構築/消滅
@@ -106,36 +105,30 @@ export class CanvasImage {
   // #endregion 読み込み
 
   // #region テクスチャ
-  public async addTexture(color: string): Promise<CanvasImageSource> {
+  public addTexture(color: string): HTMLCanvasElement {
     return this.insertTexture(color, this.texturesValue.length);
   }
 
-  public async insertTexture(color: string, index: number): Promise<CanvasImageSource> {
+  public insertTexture(color: string, index: number): HTMLCanvasElement {
     // レイヤーのテクスチャを生成する。
-    const textureData = new ImageData(this.width, this.height);
+    const textureDate = document.createElement('canvas');
+    textureDate.width = this.width;
+    textureDate.height = this.height;
 
     // color が透明以外の場合は、指定された色でテクスチャ データを塗りつぶす。
-    if (color !== 'transparent') {
-      const { data } = textureData;
-      for (let i = 0; i < data.length; i++) {
-        data[i] = 255; // 赤
-        data[i + 1] = 255; // 緑
-        data[i + 2] = 255; // 青
-      }
+    const ctx = textureDate.getContext('2d');
+    if (ctx && color !== 'transparent') {
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    return createImageBitmap(textureData)
-      .then((image) => {
-        // レイヤーのテクスチャ リストにテクスチャを挿入する。
-        this.texturesValue.splice(index, 0, image);
+    // レイヤーのテクスチャ リストにテクスチャを挿入する。
+    this.texturesValue.splice(index, 0, textureDate);
 
-        // レイヤーの不透明度リストに不透明度 1 を追加する。
-        this.imageInfo.layerOpacities.push(1);
+    // レイヤーの不透明度リストに不透明度 1 を追加する。
+    this.imageInfo.layerOpacities.push(1);
 
-        return image;
-      }).catch((err) => {
-        throw err;
-      });
+    return textureDate;
   }
   // #endregion テクスチャ
 

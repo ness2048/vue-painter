@@ -93,7 +93,7 @@ export class PaintTouchPanel {
     return this.samples.shift();
   }
 
-  public updateGestureState(pe: PointerEvent) {
+  public update(pe: PointerEvent) {
     const touches = [pe];
     if (touches.length === 0) {
       this.gestureType = PaintGestureType.None;
@@ -128,8 +128,6 @@ export class PaintTouchPanel {
         break;
       case PaintGestureType.DoubleTap:
         break;
-      // case PaintGestureType.Move:
-      //    break;
       default:
         break;
     }
