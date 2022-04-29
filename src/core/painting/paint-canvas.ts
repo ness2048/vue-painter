@@ -1,10 +1,10 @@
-import { Box2, Vector2 } from 'three';
-import { BrushParameters } from '../brush-parameters';
-import { BrushPoint } from '../brush-point';
-import { BrushRenderer } from './brush-renderer';
-import { CanvasImage } from './canvas-image';
-import { PaintGestureSample, PaintGestureType } from './paint-gesture-sample';
-import { PaintTouchPanel } from './paint-touch-panel';
+import { Box2, Vector2 } from "three";
+import { BrushParameters } from "../brush-parameters";
+import { BrushPoint } from "../brush-point";
+import { BrushRenderer } from "./brush-renderer";
+import { CanvasImage } from "./canvas-image";
+import { PaintGestureSample, PaintGestureType } from "./paint-gesture-sample";
+import { PaintTouchPanel } from "./paint-touch-panel";
 
 export class PaintCanvas {
   private static readonly ZOOM_FACTOR = 250;
@@ -139,9 +139,9 @@ export class PaintCanvas {
       if (gs.gestureType === PaintGestureType.Pinch) {
         // キャンバスの中心点を計算する。
         const gp = gs.position.add(gs.position2).divideScalar(2);
-        this.canvasOriginValue = this.canvasOriginValue
-          .add((gp.sub(this.canvasPositionValue))
-            .divideScalar(this.canvasScaleValue));
+        this.canvasOriginValue = this.canvasOriginValue.add(
+          gp.sub(this.canvasPositionValue).divideScalar(this.canvasScaleValue)
+        );
 
         // キャンバスの描画位置を計算する。
         const pd = gs.delta.add(gs.delta2).divideScalar(2);
@@ -216,14 +216,14 @@ export class PaintCanvas {
     // すべてのレイヤーの内容を消去する。
     for (let i = 0; i < this.canvasImageValue.textures.length; i++) {
       const layer = this.canvasImageValue.textures[i];
-      const ctx = layer.getContext('2d');
+      const ctx = layer.getContext("2d");
 
       if (!ctx) {
         break;
       }
 
       if (i === 0) {
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = "white";
         ctx.fillRect(0, 0, layer.width, layer.height); // 背景レイヤーは白色で塗りつぶす。
       } else {
         ctx.clearRect(0, 0, layer.width, layer.height); // その他のレイヤーは黒の透明で塗りつぶす。
@@ -267,21 +267,21 @@ export class PaintCanvas {
 
   // #region 履歴
   private beginStrokeHistory() {
-    console.log('onHoldComplete');
+    console.log("onHoldComplete");
   }
 
   private endStrokeHistory() {
-    console.log('endStrokeHistory');
+    console.log("endStrokeHistory");
   }
 
   private extendDartyRegion(p: BrushPoint) {
-    console.log('extendDartyRegion');
+    console.log("extendDartyRegion");
   }
   // #endregion 履歴
 
   // #region イベント ハンドラー
   private onTap(gs: PaintGestureSample) {
-    console.log('onTap');
+    console.log("onTap");
     const bp = this.toBrushPoint(gs);
 
     this.renderer.drawPoint(bp);
@@ -311,21 +311,21 @@ export class PaintCanvas {
   }
 
   private onDragComplete() {
-    console.log('onDragComplete');
+    console.log("onDragComplete");
     this.lastRenderedPoint = undefined;
     this.isDraging = false;
   }
 
   private onHold(gs: PaintGestureSample) {
-    console.log('onHold');
+    console.log("onHold");
   }
 
   private onHoldMove(gs: PaintGestureSample) {
-    console.log('onHoldMove');
+    console.log("onHoldMove");
   }
 
   private onHoldComplete() {
-    console.log('onHoldComplete');
+    console.log("onHoldComplete");
   }
   // #endregion イベント ハンドラー
 

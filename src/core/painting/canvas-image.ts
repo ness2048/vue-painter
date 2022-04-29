@@ -1,9 +1,9 @@
-import { Color, Vector2 } from 'three';
-import { ImageInfo } from './image-info';
+import { Color, Vector2 } from "three";
+import { ImageInfo } from "./image-info";
 
 type DrawType = {
   (texture: CanvasImageSource, color: string): void;
-}
+};
 
 /**
  * キャンバスに描画される画像を表します。
@@ -84,8 +84,8 @@ export class CanvasImage {
     this.imageInfo.height = height;
     this.imageInfo.layerOpacities = [];
 
-    this.addTexture('white');
-    this.addTexture('transparent');
+    this.addTexture("white");
+    this.addTexture("transparent");
 
     this.imageInfo.selectedLayerIndex = this.texturesValue.length - 1;
   }
@@ -111,13 +111,13 @@ export class CanvasImage {
 
   public insertTexture(color: string, index: number): HTMLCanvasElement {
     // レイヤーのテクスチャを生成する。
-    const textureDate = document.createElement('canvas');
+    const textureDate = document.createElement("canvas");
     textureDate.width = this.width;
     textureDate.height = this.height;
 
     // color が透明以外の場合は、指定された色でテクスチャ データを塗りつぶす。
-    const ctx = textureDate.getContext('2d');
-    if (ctx && color !== 'transparent') {
+    const ctx = textureDate.getContext("2d");
+    if (ctx && color !== "transparent") {
       ctx.fillStyle = color;
       ctx.fillRect(0, 0, this.width, this.height);
     }
@@ -132,10 +132,16 @@ export class CanvasImage {
   }
   // #endregion テクスチャ
 
-  public draw(context: CanvasRenderingContext2D, dx: number, dy: number, dWidth: number,
-    dHeight: number) {
-    this.nativeDrawTextures((texture, color) => context.drawImage(texture, dx, dy, dWidth,
-      dHeight));
+  public draw(
+    context: CanvasRenderingContext2D,
+    dx: number,
+    dy: number,
+    dWidth: number,
+    dHeight: number
+  ) {
+    this.nativeDrawTextures((texture, color) =>
+      context.drawImage(texture, dx, dy, dWidth, dHeight)
+    );
   }
 
   private nativeDrawTextures = (draw: DrawType) => {
@@ -145,6 +151,6 @@ export class CanvasImage {
       const color = `rgb(${opacity},${opacity},${opacity},${opacity})`;
       draw(texture, color);
     }
-  }
+  };
   // #endregion 描画
 }

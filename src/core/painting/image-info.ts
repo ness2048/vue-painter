@@ -1,7 +1,7 @@
 export class ImageInfo {
-  public author = '';
+  public author = "";
 
-  public title = '';
+  public title = "";
 
   public updateTime: Date = new Date();
 

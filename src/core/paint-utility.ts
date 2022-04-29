@@ -1,6 +1,5 @@
-import { Vector2 } from 'three';
-import { BrushParameters } from './brush-parameters';
-import { BrushPoint } from './brush-point';
+import { BrushParameters } from "./brush-parameters";
+import { BrushPoint } from "./brush-point";
 
 export class PaintUtility {
   /* eslint no-param-reassign: ["error", { "props": false }] */
@@ -10,8 +9,11 @@ export class PaintUtility {
    * @param brush ブラシ。
    * @param p 描画する位置。
    */
-  public static drawPoint(context: CanvasRenderingContext2D, brush: BrushParameters,
-    p: BrushPoint) {
+  public static drawPoint(
+    context: CanvasRenderingContext2D,
+    brush: BrushParameters,
+    p: BrushPoint
+  ) {
     // if (!brush.brushTexture) {
     //   return;
     // }
@@ -19,8 +21,8 @@ export class PaintUtility {
     // const brushSize = sizeParams.minimumSize
     //   + sizeParams.expressionStyle.apply(p, (sizeParams.size - sizeParams.minimumSize))
     //  * p.pressureFactor;
-    const brushSize = sizeParams.minimumSize + (sizeParams.size - sizeParams.minimumSize)
-      * p.pressureFactor;
+    const brushSize =
+      sizeParams.minimumSize + (sizeParams.size - sizeParams.minimumSize) * p.pressureFactor;
 
     // const t = new Vector2(p.x - brushSize / 2, p.y - brushSize / 2);
     // const sx = 0;
@@ -58,8 +60,13 @@ export class PaintUtility {
    * @param isRenderStartPoint 開始位置の点を描画するかどうか。
    * @returns 最後に描画された点。何も描画されなかった場合は undefined を返します。
    */
-  public static drawLine(context: CanvasRenderingContext2D, brush: BrushParameters,
-    p1: BrushPoint, p2: BrushPoint, isRenderStartPoint: boolean): BrushPoint | undefined {
+  public static drawLine(
+    context: CanvasRenderingContext2D,
+    brush: BrushParameters,
+    p1: BrushPoint,
+    p2: BrushPoint,
+    isRenderStartPoint: boolean
+  ): BrushPoint | undefined {
     const dx = p2.x - p1.x; // ⊿x
     const dy = p2.y - p1.y; // ⊿y
     const signX = dx < 0 ? -1 : 1;
@@ -75,14 +82,32 @@ export class PaintUtility {
 
     if (dx === 0) {
       // 線が垂直の場合。
-      return PaintUtility.drawLinePoints(context, brush, p1, 0, brush.distance * signY, ds, dp,
-        (sp) => minY <= sp.y && sp.y <= maxY, isRenderStartPoint);
+      return PaintUtility.drawLinePoints(
+        context,
+        brush,
+        p1,
+        0,
+        brush.distance * signY,
+        ds,
+        dp,
+        (sp) => minY <= sp.y && sp.y <= maxY,
+        isRenderStartPoint
+      );
     }
 
     if (dy === 0) {
       // 線が水平の場合。
-      return PaintUtility.drawLinePoints(context, brush, p1, brush.distance * signX, 0, ds, dp,
-        (sp) => minX <= sp.x && sp.x <= maxX, isRenderStartPoint);
+      return PaintUtility.drawLinePoints(
+        context,
+        brush,
+        p1,
+        brush.distance * signX,
+        0,
+        ds,
+        dp,
+        (sp) => minX <= sp.x && sp.x <= maxX,
+        isRenderStartPoint
+      );
     }
 
     const a = dy / dx; // 傾き
@@ -90,12 +115,30 @@ export class PaintUtility {
     const y = a * x; // d までの y 座標
 
     if (Math.abs(dx) > Math.abs(dy)) {
-      return PaintUtility.drawLinePoints(context, brush, p1, x, y, ds, dp,
-        (sp) => minX <= sp.x && sp.x <= maxX, isRenderStartPoint); // y 軸の判定は省略。
+      return PaintUtility.drawLinePoints(
+        context,
+        brush,
+        p1,
+        x,
+        y,
+        ds,
+        dp,
+        (sp) => minX <= sp.x && sp.x <= maxX,
+        isRenderStartPoint
+      ); // y 軸の判定は省略。
     }
 
-    return PaintUtility.drawLinePoints(context, brush, p1, x, y, ds, dp,
-      (sp) => minY <= sp.y && sp.y <= maxY, isRenderStartPoint); // x 軸の判定は省略。
+    return PaintUtility.drawLinePoints(
+      context,
+      brush,
+      p1,
+      x,
+      y,
+      ds,
+      dp,
+      (sp) => minY <= sp.y && sp.y <= maxY,
+      isRenderStartPoint
+    ); // x 軸の判定は省略。
   }
 
   /**
@@ -116,13 +159,21 @@ export class PaintUtility {
    * @param isRenderStartPoint 開始位置の点を描画するかどうか。
    * @returns 最後に描画された点。何も描画されなかった場合は undefined 。
    */
-  public static drawLinePoints(context: CanvasRenderingContext2D, brush: BrushParameters,
-    startPoint: BrushPoint, dx: number, dy: number, ds: number, dp: number,
-    pred:{ (point: BrushPoint): boolean }, isRenderStartPoint: boolean): BrushPoint | undefined {
+  public static drawLinePoints(
+    context: CanvasRenderingContext2D,
+    brush: BrushParameters,
+    startPoint: BrushPoint,
+    dx: number,
+    dy: number,
+    ds: number,
+    dp: number,
+    pred: { (point: BrushPoint): boolean },
+    isRenderStartPoint: boolean
+  ): BrushPoint | undefined {
     let lastPoint: BrushPoint | undefined;
     let isStartPoint = true;
     const pointTemp = startPoint;
-    while (true) {
+    do {
       if (isStartPoint) {
         isStartPoint = false;
         if (isRenderStartPoint) {
@@ -138,11 +189,7 @@ export class PaintUtility {
       pointTemp.y += dy;
       pointTemp.speed += ds;
       pointTemp.pressureFactor += dp;
-
-      if (pred(pointTemp) === false) {
-        break;
-      }
-    }
+    } while (pred(pointTemp));
 
     return lastPoint;
   }

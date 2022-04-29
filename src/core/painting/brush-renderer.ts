@@ -1,7 +1,7 @@
-import { BrushParameters } from '../brush-parameters';
-import { BrushPoint } from '../brush-point';
-import { PaintUtility } from '../paint-utility';
-import { SpeedExpressionStyle } from './speed-expression-style';
+import { BrushParameters } from "../brush-parameters";
+import { BrushPoint } from "../brush-point";
+import { PaintUtility } from "../paint-utility";
+import { SpeedExpressionStyle } from "./speed-expression-style";
 
 /**
  * ブラシを使用してレンダリング ターゲットにストロークを描画します。
@@ -41,7 +41,7 @@ export class BrushRenderer {
    * @param p 描画する位置。
    */
   public drawPoint(p: BrushPoint) {
-    console.log('drawPoint');
+    console.log("drawPoint");
     this.clearRenderdPoints();
     PaintUtility.drawPoint(this.context, this.brushValue, p);
     this.addRenderdPoint(p);
@@ -57,8 +57,13 @@ export class BrushRenderer {
    */
   public drawLine(p1: BrushPoint, p2: BrushPoint, isRenderStartPoint: boolean) {
     this.clearRenderdPoints();
-    const lastPoint = PaintUtility.drawLine(this.context, this.brushValue, p1, p2,
-      isRenderStartPoint);
+    const lastPoint = PaintUtility.drawLine(
+      this.context,
+      this.brushValue,
+      p1,
+      p2,
+      isRenderStartPoint
+    );
     if (lastPoint) {
       this.addRenderdPoint(lastPoint);
     }
@@ -72,8 +77,7 @@ export class BrushRenderer {
    * @param isRenderStartPoint 開始位置の点を描画するかどうか。
    * @returns 最後に描画された点を返します。
    */
-  public drawLineFromLastPoint(p: BrushPoint, isRenderStartPoint: boolean)
-  : BrushPoint | undefined {
+  public drawLineFromLastPoint(p: BrushPoint, isRenderStartPoint: boolean): BrushPoint | undefined {
     const p1 = this.lastRenderedPoint ?? p;
 
     if (this.lastRenderedPoint) {
@@ -85,8 +89,13 @@ export class BrushRenderer {
       }
     }
 
-    const lastPoint = PaintUtility.drawLine(this.context, this.brushValue, p1, p,
-      isRenderStartPoint);
+    const lastPoint = PaintUtility.drawLine(
+      this.context,
+      this.brushValue,
+      p1,
+      p,
+      isRenderStartPoint
+    );
     this.addRenderdPoint(lastPoint);
 
     return lastPoint;

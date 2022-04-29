@@ -1,4 +1,4 @@
-import { Vector2 } from 'three';
+import { Vector2 } from "three";
 
 /**
  * ジェスチャーの内部状態を表します。

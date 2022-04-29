@@ -1,5 +1,5 @@
-import { ExpressionStyleBase } from './expression-style-base';
-import { NoneExpressionStyle } from './painting/none-expression-style';
+import { ExpressionStyleBase } from "./expression-style-base";
+import { NoneExpressionStyle } from "./painting/none-expression-style";
 
 /**
  * ブラシサイズのパラメーターを表します。

@@ -1,4 +1,4 @@
-import { BrushPoint } from './brush-point';
+import { BrushPoint } from "./brush-point";
 
 export interface ExpressionStyleBase {
   isReverse: boolean;

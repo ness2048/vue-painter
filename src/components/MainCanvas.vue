@@ -3,12 +3,13 @@
     <div id="canvas-area">
       <canvas
         id="main-canvas"
-        v-bind:class="{eraser: canvasMode === 'eraser'}"
+        v-bind:class="{ eraser: canvasMode === 'eraser' }"
         width="640"
         height="800"
         @pointerdown.prevent="pointerDown"
         @pointermove.prevent="pointerMove"
-        @pointerup.prevent="pointerUp">
+        @pointerup.prevent="pointerUp"
+      >
       </canvas>
     </div>
     <div id="tool-area">
@@ -20,9 +21,9 @@
 </template>
 
 <script lang="ts">
-import { CanvasImage } from '@/core/painting/canvas-image';
-import { PaintCanvas } from '@/core/painting/paint-canvas';
-import { Options, Vue } from 'vue-class-component';
+import { CanvasImage } from "@/core/painting/canvas-image";
+import { PaintCanvas } from "@/core/painting/paint-canvas";
+import { Options, Vue } from "vue-class-component";
 
 @Options({
   props: {
@@ -30,7 +31,7 @@ import { Options, Vue } from 'vue-class-component';
   },
 })
 export default class MainCanvas extends Vue {
-  canvasMode = 'pen';
+  canvasMode = "pen";
 
   canvas!: HTMLCanvasElement;
 
@@ -41,8 +42,8 @@ export default class MainCanvas extends Vue {
   paintCanvas!: PaintCanvas;
 
   mounted() {
-    this.canvas = document.getElementById('main-canvas') as HTMLCanvasElement;
-    this.context = this.canvas.getContext('2d');
+    this.canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+    this.context = this.canvas.getContext("2d");
 
     if (this.context) {
       this.canvasImage = new CanvasImage(this.canvas.width, this.canvas.height);

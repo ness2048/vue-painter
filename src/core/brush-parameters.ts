@@ -1,4 +1,4 @@
-import { BrushSizeParameters } from './brush-size-parameters';
+import { BrushSizeParameters } from "./brush-size-parameters";
 
 export enum BlendState {
   zero,
@@ -19,28 +19,27 @@ export enum BlendState {
 /**
  * ブラシの表現手法を表します。
  */
-enum ExpressionStyleType
- {
-   /**
-    * ブラシの表現に何も影響を与えません。
-    */
-   none,
+enum ExpressionStyleType {
+  /**
+   * ブラシの表現に何も影響を与えません。
+   */
+  none,
 
-   /**
-    * 速度に基づいたブラシ表現を表します。
-    * スタイラスの速度が速いほどブラシの特性値は小さくなり、遅いほど大きくなります。
-    */
-   speed,
+  /**
+   * 速度に基づいたブラシ表現を表します。
+   * スタイラスの速度が速いほどブラシの特性値は小さくなり、遅いほど大きくなります。
+   */
+  speed,
 
-   /**
-    * 方向に基づいたブラシ表現を表します。
-    */
-   direction,
+  /**
+   * 方向に基づいたブラシ表現を表します。
+   */
+  direction,
 
-   /**
-    * 特性値に乱数を使用します。
-    */
-   random,
+  /**
+   * 特性値に乱数を使用します。
+   */
+  random,
 }
 
 /**
@@ -53,12 +52,12 @@ export class BrushParameters {
   private brushTextureValue?: CanvasImageSource;
 
   // ブラシの色を表す RGB 値とα値
-  private colorValue = 'black';
+  private colorValue = "black";
 
   // 点を描画する間隔の比率
   private distanceRatioValue = 0.1;
 
-  private nameValue = '';
+  private nameValue = "";
 
   // ブラシサイズ
   private sizeParametersValue: BrushSizeParameters = new BrushSizeParameters();
@@ -133,7 +132,7 @@ export class BrushParameters {
    */
   public get fullName(): string {
     // TODO 正式名所の取得を実装する
-    return '';
+    return "";
   }
 
   /**

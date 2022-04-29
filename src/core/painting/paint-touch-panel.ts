@@ -1,18 +1,18 @@
-import { Vector2 } from 'three';
-import { popScopeId } from 'vue';
-import { GestureNativeState, PaintGestureSample, PaintGestureType } from './paint-gesture-sample';
+import { Vector2 } from "three";
+import { popScopeId } from "vue";
+import { GestureNativeState, PaintGestureSample, PaintGestureType } from "./paint-gesture-sample";
 
 enum PointerEventType {
-  pointerOver = 'pointerover',
-  pointerEnter = 'pointerenter',
-  pointerDown = 'pointerdown',
-  pointerMove = 'pointermove',
-  pointerUp = 'pointerup',
-  pointerCancel = 'pointercancel',
-  pointerOut = 'pointerout',
-  pointerLeave = 'pointerleave',
-  gotPointerCapture = 'gotpointercapture',
-  lostPointerCapture = 'lostpointercapture',
+  pointerOver = "pointerover",
+  pointerEnter = "pointerenter",
+  pointerDown = "pointerdown",
+  pointerMove = "pointermove",
+  pointerUp = "pointerup",
+  pointerCancel = "pointercancel",
+  pointerOut = "pointerout",
+  pointerLeave = "pointerleave",
+  gotPointerCapture = "gotpointercapture",
+  lostPointerCapture = "lostpointercapture",
 }
 
 /**
@@ -70,7 +70,7 @@ export class PaintTouchPanel {
 
   private gestureType: PaintGestureType = PaintGestureType.None;
 
-  private tapLocation: PointerEvent = new PointerEvent('none');
+  private tapLocation: PointerEvent = new PointerEvent("none");
 
   public get isGestureAvailable(): boolean {
     return this.samples.length > 0;
@@ -169,8 +169,10 @@ export class PaintTouchPanel {
           this.nativeStateValue = GestureNativeState.Moved;
 
           this.onFreeDrag(this.previousTouches[0]);
-        } else if (touches.length > 1 && touches.slice(0, 2)
-          .some((t) => t.type === PointerEventType.pointerMove)) {
+        } else if (
+          touches.length > 1 &&
+          touches.slice(0, 2).some((t) => t.type === PointerEventType.pointerMove)
+        ) {
           // 2点が Moved した場合は Pinch イベント
           this.nativeStateValue = GestureNativeState.Moved;
         } else {
@@ -191,10 +193,13 @@ export class PaintTouchPanel {
         if (!this.tapLocation) {
           return;
         }
-        const d = PaintTouchPanel.pointerToVector2(tl)
-          .sub(PaintTouchPanel.pointerToVector2(this.tapLocation));
-        if (now - stateChanged < PaintTouchPanel.DOUBLE_TAP_INTERVAL
-          && d.length() < PaintTouchPanel.DOUBLE_TAP_DISTANCE) {
+        const d = PaintTouchPanel.pointerToVector2(tl).sub(
+          PaintTouchPanel.pointerToVector2(this.tapLocation)
+        );
+        if (
+          now - stateChanged < PaintTouchPanel.DOUBLE_TAP_INTERVAL &&
+          d.length() < PaintTouchPanel.DOUBLE_TAP_DISTANCE
+        ) {
           this.nativeStateValue = GestureNativeState.SingleTapPressed;
         } else {
           // DOUBLE_TAP_INTERVAL より長い場合。
@@ -232,14 +237,18 @@ export class PaintTouchPanel {
       this.nativeStateValue = GestureNativeState.Pressed;
     } else if (tl.type === PointerEventType.pointerMove) {
       if (this.nativeStateValue === GestureNativeState.Moved) {
-        if (now - stateChanged > PaintTouchPanel.PINCH_INTERVAL
-          || delta.length() > this.freeDragDistance) {
+        if (
+          now - stateChanged > PaintTouchPanel.PINCH_INTERVAL ||
+          delta.length() > this.freeDragDistance
+        ) {
           // PINCH_INTERVAL より Moved が続いた場合。
           this.nativeStateValue = GestureNativeState.None;
 
           this.onFreeDrag(tl);
-        } else if (touches.length > 1 && touches.slice(0, 2)
-          .some((t) => t.type === PointerEventType.pointerMove)) {
+        } else if (
+          touches.length > 1 &&
+          touches.slice(0, 2).some((t) => t.type === PointerEventType.pointerMove)
+        ) {
           // PINCH_INTERVAL 以内に2点が Moved した場合。
           this.nativeStateValue = GestureNativeState.None;
 
@@ -307,8 +316,9 @@ export class PaintTouchPanel {
     if (this.previousTouches.length > 0) {
       // 前回のタッチ位置が存在する場合はその差分を計算する。
       const ptl = this.previousTouches[0];
-      delta = PaintTouchPanel.pointerToVector2(touchLocation)
-        .sub(PaintTouchPanel.pointerToVector2(ptl));
+      delta = PaintTouchPanel.pointerToVector2(touchLocation).sub(
+        PaintTouchPanel.pointerToVector2(ptl)
+      );
     }
 
     const freeDragItem: PaintGestureSample = {
@@ -462,8 +472,9 @@ export class PaintTouchPanel {
     if (this.previousTouches.length > 0) {
       // 前回のタッチ位置が存在する場合はその差分を計算する。
       const ptl = this.previousTouches[0];
-      delta = PaintTouchPanel.pointerToVector2(touchLocation)
-        .sub(PaintTouchPanel.pointerToVector2(ptl));
+      delta = PaintTouchPanel.pointerToVector2(touchLocation).sub(
+        PaintTouchPanel.pointerToVector2(ptl)
+      );
     }
 
     const holdMoveItem: PaintGestureSample = {

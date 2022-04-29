@@ -1,14 +1,14 @@
-import { BrushParameters } from '../brush-parameters';
+import { BrushParameters } from "../brush-parameters";
 
 /**
  * ブラシを読み込みます。
  */
 export class BrushLoader {
-  private static readonly BRUSH_FILES_LOCATION = 'Sysdev.SmartTouchPainter.Painting.Brushes.';
+  private static readonly BRUSH_FILES_LOCATION = "Sysdev.SmartTouchPainter.Painting.Brushes.";
 
-  private static readonly BRUSH_FILE_EXT = '.xml';
+  private static readonly BRUSH_FILE_EXT = ".xml";
 
-  private static readonly BRUSH_TEXTURE_EXT = '.png';
+  private static readonly BRUSH_TEXTURE_EXT = ".png";
 
   /**
    * すべてのブラシ名のリストを取得します。

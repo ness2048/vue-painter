@@ -1,11 +1,11 @@
 <template>
   <h1>vue-painter</h1>
-  <main-canvas msg="Welcome to Your Vue.js + TypeScript App"/>
+  <main-canvas msg="Welcome to Your Vue.js + TypeScript App" />
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import MainCanvas from './components/MainCanvas.vue';
+import { Options, Vue } from "vue-class-component";
+import MainCanvas from "./components/MainCanvas.vue";
 
 @Options({
   components: {

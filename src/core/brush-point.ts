@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import { Vector2 } from 'three';
+import * as THREE from "three";
+import { Vector2 } from "three";
 
 export class BrushPoint {
   public x = 0;
