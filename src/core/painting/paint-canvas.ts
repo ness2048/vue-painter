@@ -1,10 +1,105 @@
-import { Box2, Vector2 } from "three";
+import { Box2, NumberKeyframeTrack, Vector2 } from "three";
 import { BrushParameters } from "../brush-parameters";
 import { BrushPoint } from "../brush-point";
 import { BrushRenderer } from "./brush-renderer";
 import { CanvasImage } from "./canvas-image";
 import { PaintGestureSample, PaintGestureType } from "./paint-gesture-sample";
 import { PaintTouchPanel } from "./paint-touch-panel";
+
+export interface NativePointerEvent {
+  readonly altKey: boolean;
+  readonly button: number;
+  readonly buttons: number;
+  readonly clientX: number;
+  readonly clientY: number;
+  readonly ctrlKey: boolean;
+  readonly metaKey: boolean;
+  readonly movementX: number;
+  readonly movementY: number;
+  readonly offsetX: number;
+  readonly offsetY: number;
+  readonly pageX: number;
+  readonly pageY: number;
+  readonly pointerId: number;
+  readonly pointerType: string;
+  readonly pressure: number;
+  readonly screenX: number;
+  readonly screenY: number;
+  readonly shiftKey: boolean;
+  readonly tangentialPressure: number;
+  readonly tiltX: number;
+  readonly tiltY: number;
+  readonly twist: number;
+  readonly type: string;
+  readonly x: number;
+  readonly y: number;
+}
+
+export class NativePointerEventImplements implements NativePointerEvent {
+  altKey = false;
+  button = 0;
+  buttons = 0;
+  clientX = 0;
+  clientY = 0;
+  ctrlKey = false;
+  metaKey = false;
+  movementX = 0;
+  movementY = 0;
+  offsetX = 0;
+  offsetY = 0;
+  pageX = 0;
+  pageY = 0;
+  pointerId = 0;
+  pointerType = "";
+  pressure = 0;
+  screenX = 0;
+  screenY = 0;
+  shiftKey = false;
+  tangentialPressure = 0;
+  tiltX = 0;
+  tiltY = 0;
+  twist = 0;
+  type: string;
+  x = 0;
+  y = 0;
+
+  constructor(type: string) {
+    this.type = type;
+  }
+
+  static fromPointerEvent(pe: PointerEvent): NativePointerEvent {
+    const ret = {
+      altKey: pe.altKey,
+      button: pe.button,
+      buttons: pe.buttons,
+      clientX: pe.clientX,
+      clientY: pe.clientY,
+      ctrlKey: pe.ctrlKey,
+      metaKey: pe.metaKey,
+      movementX: pe.movementX,
+      movementY: pe.movementY,
+      offsetX: pe.offsetX,
+      offsetY: pe.offsetY,
+      pageX: pe.pageX,
+      pageY: pe.pageY,
+      pointerId: pe.pointerId,
+      pointerType: pe.pointerType,
+      pressure: pe.pressure,
+      screenX: pe.screenX,
+      screenY: pe.screenY,
+      shiftKey: pe.shiftKey,
+      tangentialPressure: pe.tangentialPressure,
+      type: pe.type,
+      tiltX: pe.tiltX,
+      tiltY: pe.tiltY,
+      twist: pe.twist,
+      x: pe.x,
+      y: pe.y,
+    };
+
+    return ret;
+  }
+}
 
 export class PaintCanvas {
   private static readonly ZOOM_FACTOR = 250;
@@ -38,10 +133,14 @@ export class PaintCanvas {
 
   private canvasImageValue!: CanvasImage;
 
-  private paintTouchPanel: PaintTouchPanel = new PaintTouchPanel();
+  private nativePaintTouchPanel: PaintTouchPanel = new PaintTouchPanel();
 
   private dartyRegion: Box2 = new Box2();
   // #endregion プライベート フィールド
+
+  public get paintTouchPanel(): PaintTouchPanel {
+    return this.nativePaintTouchPanel;
+  }
 
   // #region プロパティ
   public get context(): CanvasRenderingContext2D {
@@ -114,6 +213,10 @@ export class PaintCanvas {
   // #endregion 構築/消滅
 
   // #region 描画
+  /**
+   * ストローク キューに追加された点を描画します。
+   * 呼出し後にキューは消去されます。
+   */
   public draw() {
     // ストロークを描画する。
     this.drawStroke();
@@ -121,11 +224,21 @@ export class PaintCanvas {
     // ストロークのキューを消去する。
     this.strokeQueue.splice(0);
 
-    // this.canvasImage.draw(this.context, this.canvasPosition.x,
-    //   this.canvasPosition.y, this.canvasImage.width, this.canvasImage.height);
+    // this.canvasImage.draw(
+    //   this.context,
+    //   this.canvasPosition.x,
+    //   this.canvasPosition.y,
+    //   this.canvasImage.width,
+    //   this.canvasImage.height
+    // );
   }
 
-  public update(pe: PointerEvent): boolean {
+  /**
+   * ポイントを追加してストロークを更新します。
+   * @param pe ポインター イベント。
+   * @returns
+   */
+  public update(pe: NativePointerEvent): boolean {
     this.paintTouchPanel.update(pe);
 
     let ret = false;
@@ -191,6 +304,9 @@ export class PaintCanvas {
     return ret;
   }
 
+  /**
+   * キャンバスを消去します。
+   */
   public clear() {
     // キャンバス消去の履歴を追加する。
     // const historyItem = new ClearAllLayersHistoryItem();
@@ -330,7 +446,7 @@ export class PaintCanvas {
   // #endregion イベント ハンドラー
 
   // #region 変換
-  public toBrushPoint(gs: PaintGestureSample) {
+  public toBrushPoint(gs: PaintGestureSample): BrushPoint {
     const cp = this.transformScreenToCanvas(gs.position);
     const p = new BrushPoint();
     p.x = cp.x;

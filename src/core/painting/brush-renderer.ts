@@ -1,4 +1,4 @@
-import { BrushParameters } from "../brush-parameters";
+import { BlendState, BrushParameters } from "../brush-parameters";
 import { BrushPoint } from "../brush-point";
 import { PaintUtility } from "../paint-utility";
 import { SpeedExpressionStyle } from "./speed-expression-style";
@@ -32,8 +32,10 @@ export class BrushRenderer {
     expStyle.maximumSpeed = 10;
     expStyle.minimumSpeed = 0;
     this.brushValue.sizeParameters.expressionStyle = expStyle;
-    this.brushValue.sizeParameters.minimumSizeRatio = 0.1;
+    const g = this.brushValue.sizeParameters.minimumSizeRatio;
     this.brushValue.sizeParameters.size = 12;
+    this.brushValue.color = "red";
+    this.brushValue.blendState2 = BlendState.inverseSourceAlpha;
   }
 
   /**

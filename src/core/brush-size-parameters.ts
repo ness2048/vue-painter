@@ -27,13 +27,16 @@ export class BrushSizeParameters {
   }
 
   /**
-   * ブラシの最小サイズの比率を取得または設定します。
+   * ブラシの最小サイズの比率を取得します。
    * @default 1.0
    */
   public get minimumSizeRatio(): number {
     return this.minimumSizeRatioValue;
   }
 
+  /**
+   * ブラシの最小サイズの比率を設定します。
+   */
   public set minimumSizeRatio(value: number) {
     this.minimumSizeRatioValue = value;
   }

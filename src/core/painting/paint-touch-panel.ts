@@ -1,5 +1,6 @@
 import { Vector2 } from "three";
 import { popScopeId } from "vue";
+import { NativePointerEvent, NativePointerEventImplements } from "./paint-canvas";
 import { GestureNativeState, PaintGestureSample, PaintGestureType } from "./paint-gesture-sample";
 
 enum PointerEventType {
@@ -62,7 +63,7 @@ export class PaintTouchPanel {
 
   private samples: PaintGestureSample[] = [];
 
-  private previousTouches: PointerEvent[] = [];
+  private previousTouches: NativePointerEvent[] = [];
 
   private nativeStateValue: GestureNativeState = GestureNativeState.None;
 
@@ -70,10 +71,20 @@ export class PaintTouchPanel {
 
   private gestureType: PaintGestureType = PaintGestureType.None;
 
-  private tapLocation: PointerEvent = new PointerEvent("none");
+  private tapLocation: NativePointerEvent = new NativePointerEventImplements("none");
 
+  /**
+   * ジェスチャーが有効かどうかを示す値を取得します。
+   */
   public get isGestureAvailable(): boolean {
     return this.samples.length > 0;
+  }
+
+  /**
+   * ジェスチャー サンプルのリストを取得します。
+   */
+  public get gestureSamples(): PaintGestureSample[] {
+    return this.samples;
   }
 
   private get nativeState(): GestureNativeState {
@@ -89,11 +100,15 @@ export class PaintTouchPanel {
   }
 
   // #region ジェスチャー
+  /**
+   * 最初の要素を取り除き、その値を返します。
+   * @returns 最初の要素
+   */
   public readGesture(): PaintGestureSample | undefined {
     return this.samples.shift();
   }
 
-  public update(pe: PointerEvent) {
+  public update(pe: NativePointerEvent) {
     const touches = [pe];
     if (touches.length === 0) {
       this.gestureType = PaintGestureType.None;
@@ -135,7 +150,7 @@ export class PaintTouchPanel {
     this.previousTouches = touches;
   }
 
-  private transitionNoneState(touches: PointerEvent[]) {
+  private transitionNoneState(touches: NativePointerEvent[]) {
     const now = new Date().getTime();
     const stateChanged = this.nativeStateChangedTime.getTime();
 
@@ -260,7 +275,7 @@ export class PaintTouchPanel {
     }
   }
 
-  private transitionPinchState(touches: PointerEvent[]) {
+  private transitionPinchState(touches: NativePointerEvent[]) {
     if (touches.slice(0, 2).some((t) => t.type === PointerEventType.pointerUp)) {
       this.onPinchComplete();
     } else {
@@ -268,11 +283,11 @@ export class PaintTouchPanel {
     }
   }
 
-  private transitionPinchCompleteState(touches: PointerEvent[]) {
+  private transitionPinchCompleteState(touches: NativePointerEvent[]) {
     this.gestureType = PaintGestureType.None;
   }
 
-  private transitionFreeDragState(touchLocation: PointerEvent) {
+  private transitionFreeDragState(touchLocation: NativePointerEvent) {
     if (touchLocation.type === PointerEventType.pointerUp) {
       this.onDragComplete();
     } else {
@@ -280,11 +295,11 @@ export class PaintTouchPanel {
     }
   }
 
-  private transitionDragCompleteState(touches: PointerEvent[]) {
+  private transitionDragCompleteState(touches: NativePointerEvent[]) {
     this.gestureType = PaintGestureType.None;
   }
 
-  private transitionHoldState(touchLocation: PointerEvent) {
+  private transitionHoldState(touchLocation: NativePointerEvent) {
     if (touchLocation.type === PointerEventType.pointerUp) {
       this.gestureType = PaintGestureType.None;
     } else if (touchLocation.type === PointerEventType.pointerMove) {
@@ -292,7 +307,7 @@ export class PaintTouchPanel {
     }
   }
 
-  private transitionHoldMoveState(touchLocation: PointerEvent) {
+  private transitionHoldMoveState(touchLocation: NativePointerEvent) {
     if (touchLocation.type === PointerEventType.pointerUp) {
       this.onHoldComplete();
     } else {
@@ -300,14 +315,14 @@ export class PaintTouchPanel {
     }
   }
 
-  private transitionHoldCompleteState(touchLocation: PointerEvent) {
+  private transitionHoldCompleteState(touchLocation: NativePointerEvent) {
     this.gestureType = PaintGestureType.None;
   }
 
   // #endregion ジェスチャー
 
   // #region イベント ハンドラー
-  private onFreeDrag(touchLocation: PointerEvent) {
+  private onFreeDrag(touchLocation: NativePointerEvent) {
     const pos = PaintTouchPanel.pointerToVector2(touchLocation);
     let delta = new Vector2();
 
@@ -356,7 +371,7 @@ export class PaintTouchPanel {
     this.samples.push(dragCompleteItem);
   }
 
-  private onPinch(touches: PointerEvent[]) {
+  private onPinch(touches: NativePointerEvent[]) {
     const tl = touches[0];
     const ptl = this.previousTouches[0];
     const pos = PaintTouchPanel.pointerToVector2(tl);
@@ -407,7 +422,7 @@ export class PaintTouchPanel {
     this.samples.push(pinchCompleteItem);
   }
 
-  private onTap(touchLocation: PointerEvent) {
+  private onTap(touchLocation: NativePointerEvent) {
     this.gestureType = PaintGestureType.Tap;
 
     const tapItem: PaintGestureSample = {
@@ -426,7 +441,7 @@ export class PaintTouchPanel {
     this.samples.push(tapItem);
   }
 
-  private onDoubleTap(touchLocation: PointerEvent) {
+  private onDoubleTap(touchLocation: NativePointerEvent) {
     this.gestureType = PaintGestureType.DoubleTap;
 
     const doubleTapItem: PaintGestureSample = {
@@ -445,7 +460,7 @@ export class PaintTouchPanel {
     this.samples.push(doubleTapItem);
   }
 
-  private onHold(touchLocation: PointerEvent) {
+  private onHold(touchLocation: NativePointerEvent) {
     this.gestureType = PaintGestureType.Hold;
 
     const holdItem: PaintGestureSample = {
@@ -464,7 +479,7 @@ export class PaintTouchPanel {
     this.samples.push(holdItem);
   }
 
-  private onHoldMove(touchLocation: PointerEvent) {
+  private onHoldMove(touchLocation: NativePointerEvent) {
     let delta = new Vector2();
 
     this.gestureType = PaintGestureType.HoldMove;
@@ -512,7 +527,7 @@ export class PaintTouchPanel {
     this.samples.push(holdCompleteItem);
   }
 
-  private static pointerToVector2(p: PointerEvent): Vector2 {
+  private static pointerToVector2(p: NativePointerEvent): Vector2 {
     return new Vector2(p.offsetX, p.offsetY);
   }
   // #endregion イベント ハンドラー
