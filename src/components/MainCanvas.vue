@@ -21,10 +21,17 @@ import {
   NativePointerEventImplements,
   PaintCanvas,
 } from "@/core/painting/paint-canvas";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, PropType, ref, toRefs, watch } from "vue";
 import { io, Socket } from "socket.io-client";
 
 export default defineComponent({
+  props: {
+    color: {
+      type: String as PropType<string>,
+      default: () => "black",
+    },
+  },
+
   setup(props) {
     const FPS = 60;
     const frameTime = 1 / FPS;
@@ -51,6 +58,10 @@ export default defineComponent({
         paintCanvas = new PaintCanvas(context, canvasImage);
       }
 
+      const { color } = toRefs(props);
+      watch(color, () => {
+        paintCanvas.brush.color = props.color;
+      });
       window.requestAnimationFrame(onDraw);
     });
 
