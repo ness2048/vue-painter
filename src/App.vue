@@ -1,27 +1,36 @@
 <template>
-  <h1>vue-painter</h1>
-  <main-canvas msg="Welcome to Your Vue.js + TypeScript App" />
+  <v-app dark>
+    <v-app-bar height="22" color="grey-darken-3" class="elevation-1">
+      <v-spacer></v-spacer>
+      <v-btn id="color-activator">
+        <v-icon :color="picker">mdi-circle</v-icon>
+      </v-btn>
+      <v-menu activator="#color-activator" anchor="start">
+        <v-color-picker v-model="picker"></v-color-picker>
+      </v-menu>
+    </v-app-bar>
+    <v-navigation-drawer color="grey-darken-3" permanent width="32"></v-navigation-drawer>
+    <v-main>
+      <v-container>
+        <main-canvas></main-canvas>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import MainCanvas from "./components/MainCanvas.vue";
 
-@Options({
+export default defineComponent({
   components: {
     MainCanvas,
   },
-})
-export default class App extends Vue {}
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  data() {
+    return {
+      picker: "black" as string,
+    };
+  },
+});
+</script>
