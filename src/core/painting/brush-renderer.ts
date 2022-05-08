@@ -32,10 +32,9 @@ export class BrushRenderer {
     expStyle.maximumSpeed = 10;
     expStyle.minimumSpeed = 0;
     this.brushValue.sizeParameters.expressionStyle = expStyle;
-    const g = this.brushValue.sizeParameters.minimumSizeRatio;
+    this.brushValue.sizeParameters.minimumSizeRatio = 0.1;
     this.brushValue.sizeParameters.size = 12;
-    this.brushValue.color = "red";
-    this.brushValue.blendState2 = BlendState.inverseSourceAlpha;
+    this.brushValue.color = "black";
   }
 
   /**
