@@ -3,8 +3,8 @@
     <div id="canvas-area">
       <canvas
         id="main-canvas"
-        width="640"
-        height="800"
+        :width="width"
+        :height="height"
         @pointerdown.prevent="onPointerDown"
         @pointermove.prevent="onPointerMove"
         @pointerup.prevent="onPointerUp"
@@ -29,6 +29,14 @@ export default defineComponent({
     color: {
       type: String as PropType<string>,
       default: () => "black",
+    },
+    width: {
+      type: Number,
+      default: () => 1000,
+    },
+    height: {
+      type: Number,
+      default: () => 1000,
     },
   },
 
@@ -65,12 +73,20 @@ export default defineComponent({
       window.requestAnimationFrame(onDraw);
     });
 
+    /**
+     * ストローク情報をサーバーに送信します。
+     * 送信後にストローク情報は消去されます。
+     */
     const sendStroke = (): void => {
       socket.emit("stroke", strokes);
       // this.strokes.slice(0);
       strokes.length = 0;
     };
 
+    /**
+     * ストローク情報をサーバーから受診します。
+     * @param strokes 受診したポインターイベントのリスト。
+     */
     const receiveStroke = (strokes: NativePointerEvent[]): void => {
       strokes.forEach((pe) => {
         paintCanvas.update(pe);
@@ -131,7 +147,8 @@ export default defineComponent({
   touch-action: pan-x pan-y;
 }
 #main-canvas {
-  border: 0px solid #000000;
+  /* border: 1px solid #000000; */
+  background-color: white;
   touch-action: none;
   user-select: none;
 }
