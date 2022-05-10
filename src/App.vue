@@ -38,14 +38,14 @@
 
     <v-main class="bg-grey-darken-2">
       <v-container class="ml-0 pa-0">
-        <main-canvas :color="picker" :width="1000" :height="1000"></main-canvas>
+        <main-canvas :brush-color="picker" :width="1000" :height="1000"></main-canvas>
       </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 import MainCanvas from "./components/MainCanvas.vue";
 
 export default defineComponent({

@@ -21,19 +21,28 @@ import {
   NativePointerEventImplements,
   PaintCanvas,
 } from "@/core/painting/paint-canvas";
-import { defineComponent, onMounted, PropType, ref, toRefs, watch } from "vue";
+import { defineComponent, onMounted, PropType, toRefs, watch } from "vue";
 import { io, Socket } from "socket.io-client";
 
 export default defineComponent({
   props: {
-    color: {
+    /**
+     * ブラシの色を設定します。
+     */
+    brushColor: {
       type: String as PropType<string>,
       default: () => "black",
     },
+    /**
+     * キャンバスの幅を設定します。
+     */
     width: {
       type: Number,
       default: () => 1000,
     },
+    /**
+     * キャンバスの高さを設定します。
+     */
     height: {
       type: Number,
       default: () => 1000,
@@ -47,6 +56,7 @@ export default defineComponent({
     let context: CanvasRenderingContext2D | null = null;
     let canvasImage!: CanvasImage;
     let paintCanvas!: PaintCanvas;
+    let receivedPaintCanvas!: PaintCanvas;
     let socket!: Socket;
     let strokes: NativePointerEvent[] = [];
     let prevTimeStamp = 0;
@@ -55,8 +65,9 @@ export default defineComponent({
       const apiRoot = process.env.VUE_APP_API_URL;
 
       socket = io(apiRoot);
-      socket.on("stroke", (strokes: NativePointerEvent[]) => {
-        receiveStroke(strokes);
+      socket.on("stroke", (points: NativePointerEvent[]) => {
+        // ストローク イベントを受信した。
+        receiveStroke(points);
       });
       canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
       context = canvas.getContext("2d");
@@ -64,12 +75,16 @@ export default defineComponent({
       if (context) {
         canvasImage = new CanvasImage(canvas.width, canvas.height);
         paintCanvas = new PaintCanvas(context, canvasImage);
+        receivedPaintCanvas = new PaintCanvas(context, canvasImage);
       }
 
-      const { color } = toRefs(props);
-      watch(color, () => {
-        paintCanvas.brush.color = props.color;
+      const { brushColor } = toRefs(props);
+      watch(brushColor, () => {
+        // ブラシカラーが変更されたとき paintCanvas.brush.color を更新する。
+        paintCanvas.brush.color = props.brushColor;
       });
+
+      // キャンバスの描画を開始する。
       window.requestAnimationFrame(onDraw);
     });
 
@@ -79,20 +94,24 @@ export default defineComponent({
      */
     const sendStroke = (): void => {
       socket.emit("stroke", strokes);
-      // this.strokes.slice(0);
       strokes.length = 0;
     };
 
     /**
-     * ストローク情報をサーバーから受診します。
-     * @param strokes 受診したポインターイベントのリスト。
+     * ストローク情報をサーバーから受信します。
+     * @param strokes 受信したポインター イベントのリスト。
      */
-    const receiveStroke = (strokes: NativePointerEvent[]): void => {
-      strokes.forEach((pe) => {
-        paintCanvas.update(pe);
+    const receiveStroke = (points: NativePointerEvent[]): void => {
+      //      receiveStrokes = receiveStrokes.concat(strokes);
+      points.forEach((pe) => {
+        receivedPaintCanvas.update(pe);
       });
     };
 
+    /**
+     * ポインターが押されたときの処理を行います。
+     * @param pe ポインター イベント。
+     */
     const onPointerDown = (pe: PointerEvent): void => {
       // const np = fromPointerEvent(pe);
       paintCanvas.update(pe);
@@ -101,12 +120,20 @@ export default defineComponent({
       pe.preventDefault();
     };
 
+    /**
+     * ポインターが移動したときの処理を行います。
+     * @param pe ポインター イベント。
+     */
     const onPointerMove = (pe: PointerEvent): void => {
       paintCanvas.update(pe);
       strokes.push(NativePointerEventImplements.fromPointerEvent(pe));
       pe.preventDefault();
     };
 
+    /**
+     * ポインターが離されたときの処理を行います。
+     * @param pe ポインター イベント。
+     */
     const onPointerUp = (pe: PointerEvent): void => {
       paintCanvas.update(pe);
       strokes.push(NativePointerEventImplements.fromPointerEvent(pe));
@@ -114,10 +141,10 @@ export default defineComponent({
       pe.preventDefault();
     };
 
-    const clear = (): void => {
-      paintCanvas.clear();
-    };
-
+    /**
+     * 描画が発生したときの処理を行います。
+     * @param timestamp 描画が呼び出された時間。
+     */
     const onDraw = (timestamp: number): void => {
       const elapsed = (timestamp - prevTimeStamp) / 1000;
       if (elapsed <= frameTime) {
@@ -126,9 +153,10 @@ export default defineComponent({
       }
 
       prevTimeStamp = timestamp;
-
+      // ストロークを描画
       paintCanvas.draw();
-
+      // 受信したストロークを描画
+      receivedPaintCanvas.draw();
       window.requestAnimationFrame(onDraw);
     };
 
