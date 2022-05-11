@@ -65,9 +65,9 @@ export default defineComponent({
       const apiRoot = process.env.VUE_APP_API_URL;
 
       socket = io(apiRoot);
-      socket.on("stroke", (points: NativePointerEvent[]) => {
+      socket.on("stroke", (points: NativePointerEvent[], brushColor: string) => {
         // ストローク イベントを受信した。
-        receiveStroke(points);
+        receiveStroke(points, brushColor);
       });
       canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
       context = canvas.getContext("2d");
@@ -93,19 +93,20 @@ export default defineComponent({
      * 送信後にストローク情報は消去されます。
      */
     const sendStroke = (): void => {
-      socket.emit("stroke", strokes);
+      socket.emit("stroke", strokes, paintCanvas.brush.color);
       strokes.length = 0;
     };
 
     /**
      * ストローク情報をサーバーから受信します。
      * @param strokes 受信したポインター イベントのリスト。
+     * @param brushColor ブラシの色。
      */
-    const receiveStroke = (points: NativePointerEvent[]): void => {
-      //      receiveStrokes = receiveStrokes.concat(strokes);
+    const receiveStroke = (points: NativePointerEvent[], brushColor: string): void => {
       points.forEach((pe) => {
         receivedPaintCanvas.update(pe);
       });
+      receivedPaintCanvas.brush.color = brushColor;
     };
 
     /**
