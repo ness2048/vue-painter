@@ -34,6 +34,13 @@ export default defineComponent({
       default: () => "black",
     },
     /**
+     * ブラシ サイズを設定します。
+     */
+    brushSize: {
+      type: Number,
+      default: () => 12,
+    },
+    /**
      * キャンバスの幅を設定します。
      */
     width: {
@@ -82,6 +89,12 @@ export default defineComponent({
       watch(brushColor, () => {
         // ブラシカラーが変更されたとき paintCanvas.brush.color を更新する。
         paintCanvas.brush.color = props.brushColor;
+      });
+
+      const { brushSize } = toRefs(props);
+      watch(brushSize, () => {
+        // ブラシサイズが変更されたとき paintCanvas.brush.size を更新する。
+        paintCanvas.brush.sizeParameters.size = props.brushSize;
       });
 
       // キャンバスの描画を開始する。
@@ -173,12 +186,9 @@ export default defineComponent({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 * {
-  touch-action: pan-x pan-y;
+  /* touch-action: pan-x pan-y; */
 }
 #main-canvas {
-  /* border: 1px solid #000000; */
   background-color: white;
-  touch-action: none;
-  user-select: none;
 }
 </style>
