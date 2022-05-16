@@ -1,35 +1,35 @@
 # vue-painter
 
-## Project setup
+## プロジェクト セットアップ
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### デバッグ用のコンパイルとホット リロード
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### プロダクション用のコンパイルとミニファイ
 ```
 npm run build
 ```
 
-### Run your unit tests
+### ユニットテストの実行
 ```
 npm run test:unit
 ```
 
-### Run your end-to-end tests
+### エンドツーエンド テストの実行
 ```
 npm run test:e2e
 ```
 
-### Lints and fixes files
+### リントとファイル修正 Lints and fixes files
 ```
 npm run lint
 ```
 
-### Customize configuration
+### コンフィグレーション カスタマイズ
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
