@@ -1,6 +1,6 @@
-import { BlendState, BrushParameters } from "../brush-parameters";
-import { BrushPoint } from "../brush-point";
-import { PaintUtility } from "../paint-utility";
+import { Brush } from "./brush";
+import { BrushPoint } from "./brush-point";
+import { PaintUtility } from "./paint-utility";
 import { SpeedExpressionStyle } from "./speed-expression-style";
 
 /**
@@ -11,7 +11,7 @@ export class BrushRenderer {
 
   private lastRenderedPoint?: BrushPoint;
 
-  private brushValue: BrushParameters = new BrushParameters();
+  private brushValue: Brush = new Brush();
 
   private renderedPoints: BrushPoint[] = [];
 
@@ -22,16 +22,16 @@ export class BrushRenderer {
   /**
    * ブラシを取得または設定します。
    */
-  public get brush(): BrushParameters {
+  public get brush(): Brush {
     return this.brushValue;
   }
 
-  public set brush(value: BrushParameters) {
+  public set brush(value: Brush) {
     this.brushValue = value;
     const expStyle = new SpeedExpressionStyle();
     expStyle.maximumSpeed = 10;
     expStyle.minimumSpeed = 0;
-    this.brushValue.sizeParameters.expressionStyle = expStyle;
+    this.brushValue.expressionStyle = expStyle;
     this.brushValue.sizeParameters.minimumSizeRatio = 0.1;
     this.brushValue.sizeParameters.size = 12;
     this.brushValue.color = "black";

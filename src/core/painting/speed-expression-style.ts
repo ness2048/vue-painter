@@ -1,5 +1,5 @@
-import { BrushPoint } from "../brush-point";
-import { ExpressionStyleBase } from "../expression-style-base";
+import { BrushPoint } from "./brush-point";
+import { ExpressionStyleBase } from "./expression-style-base";
 
 export class SpeedExpressionStyle implements ExpressionStyleBase {
   public isReverse = false;

@@ -16,13 +16,14 @@
 
 <script lang="ts">
 import { CanvasImage } from "@/core/painting/canvas-image";
+import { PaintCanvas } from "@/core/painting/paint-canvas";
 import {
   NativePointerEvent,
   NativePointerEventImplements,
-  PaintCanvas,
-} from "@/core/painting/paint-canvas";
+} from "@/core/painting/NativePointerEvent";
 import { defineComponent, onMounted, PropType, toRefs, watch } from "vue";
 import { io, Socket } from "socket.io-client";
+import { BrushParameters } from "@/core/painting/brush-parameters";
 
 export default defineComponent({
   props: {
@@ -72,9 +73,9 @@ export default defineComponent({
       const apiRoot = process.env.VUE_APP_API_URL;
 
       socket = io(apiRoot);
-      socket.on("stroke", (points: NativePointerEvent[], brushColor: string) => {
+      socket.on("stroke", (points: NativePointerEvent[], brushParams: BrushParameters) => {
         // ストローク イベントを受信した。
-        receiveStroke(points, brushColor);
+        receiveStroke(points, brushParams);
       });
       canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
       context = canvas.getContext("2d");
@@ -106,20 +107,20 @@ export default defineComponent({
      * 送信後にストローク情報は消去されます。
      */
     const sendStroke = (): void => {
-      socket.emit("stroke", strokes, paintCanvas.brush.color);
+      socket.emit("stroke", strokes, paintCanvas.brush.brushParameters);
       strokes.length = 0;
     };
 
     /**
      * ストローク情報をサーバーから受信します。
-     * @param strokes 受信したポインター イベントのリスト。
-     * @param brushColor ブラシの色。
+     * @param points 受信したポインター イベントのリスト。
+     * @param brushParams ブラシのパラメーター。
      */
-    const receiveStroke = (points: NativePointerEvent[], brushColor: string): void => {
+    const receiveStroke = (points: NativePointerEvent[], brushParams: BrushParameters): void => {
+      receivedPaintCanvas.brush.brushParameters = brushParams;
       points.forEach((pe) => {
         receivedPaintCanvas.update(pe);
       });
-      receivedPaintCanvas.brush.color = brushColor;
     };
 
     /**

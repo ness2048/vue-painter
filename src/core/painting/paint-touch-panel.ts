@@ -1,6 +1,6 @@
 import { Vector2 } from "three";
 import { popScopeId } from "vue";
-import { NativePointerEvent, NativePointerEventImplements } from "./paint-canvas";
+import { NativePointerEvent, NativePointerEventImplements } from "./NativePointerEvent";
 import { GestureNativeState, PaintGestureSample, PaintGestureType } from "./paint-gesture-sample";
 
 enum PointerEventType {

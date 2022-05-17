@@ -1,4 +1,4 @@
-import { BrushParameters } from "../brush-parameters";
+import { Brush } from "./brush";
 
 /**
  * ブラシを読み込みます。
@@ -24,7 +24,7 @@ export class BrushLoader {
    * @returns ブラシのリスト。
    * @todo 実装中。
    */
-  public getAllBrushes(): BrushParameters[] {
+  public getAllBrushes(): Brush[] {
     // TODO 実装すること。
     return [];
   }
@@ -34,7 +34,7 @@ export class BrushLoader {
    * @param brushName ブラシ名。
    * @returns ブラシ。
    */
-  public getBrush(brushName: string): BrushParameters | undefined {
+  public getBrush(brushName: string): Brush | undefined {
     // TODO 実装すること。
     return undefined;
   }

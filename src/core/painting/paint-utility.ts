@@ -1,4 +1,4 @@
-import { BrushParameters } from "./brush-parameters";
+import { Brush } from "./brush";
 import { BrushPoint } from "./brush-point";
 
 export class PaintUtility {
@@ -9,11 +9,7 @@ export class PaintUtility {
    * @param brush ブラシ。
    * @param p 描画する位置。
    */
-  public static drawPoint(
-    context: CanvasRenderingContext2D,
-    brush: BrushParameters,
-    p: BrushPoint
-  ) {
+  public static drawPoint(context: CanvasRenderingContext2D, brush: Brush, p: BrushPoint) {
     // if (!brush.brushTexture) {
     //   return;
     // }
@@ -21,8 +17,7 @@ export class PaintUtility {
     // const brushSize = sizeParams.minimumSize
     //   + sizeParams.expressionStyle.apply(p, (sizeParams.size - sizeParams.minimumSize))
     //  * p.pressureFactor;
-    const brushSize =
-      sizeParams.minimumSize + (sizeParams.size - sizeParams.minimumSize) * p.pressureFactor;
+    const brushSize = brush.minimumSize + (sizeParams.size - brush.minimumSize) * p.pressureFactor;
 
     // const t = new Vector2(p.x - brushSize / 2, p.y - brushSize / 2);
     // const sx = 0;
@@ -62,7 +57,7 @@ export class PaintUtility {
    */
   public static drawLine(
     context: CanvasRenderingContext2D,
-    brush: BrushParameters,
+    brush: Brush,
     p1: BrushPoint,
     p2: BrushPoint,
     isRenderStartPoint: boolean
@@ -161,7 +156,7 @@ export class PaintUtility {
    */
   public static drawLinePoints(
     context: CanvasRenderingContext2D,
-    brush: BrushParameters,
+    brush: Brush,
     startPoint: BrushPoint,
     dx: number,
     dy: number,
