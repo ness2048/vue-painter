@@ -33,15 +33,7 @@
       </v-list>
 
       <!-- ブラシ サイズ -->
-      <v-slider
-        direction="vertical"
-        label="Regular"
-        color="grey-lighten-1"
-        :width="10"
-        :min="1"
-        v-model="brushSize"
-        class="brush-slider"
-      ></v-slider>
+      <brush-slider v-model:brush-size="brushSize"></brush-slider>
 
       <!-- 不透明度 -->
       <!-- <v-slider
@@ -86,10 +78,12 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import MainCanvas from "./components/MainCanvas.vue";
+import BrushSlider from "./components/BrushSlider.vue";
 
 export default defineComponent({
   components: {
     MainCanvas,
+    BrushSlider,
   },
 
   setup() {
@@ -119,8 +113,5 @@ export default defineComponent({
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-}
-.brush-slider.v-slider.v-input--vertical .v-input__control {
-  min-height: 200px;
 }
 </style>
