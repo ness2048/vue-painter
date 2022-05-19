@@ -7,7 +7,7 @@
       </v-btn>
 
       <v-btn id="color-activator">
-        <v-icon :color="picker">mdi-circle</v-icon>
+        <v-icon :color="brushColorRgb">mdi-circle</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -33,24 +33,16 @@
       </v-list>
 
       <!-- ブラシ サイズ -->
-      <brush-slider v-model:brush-size="brushSize"></brush-slider>
+      <brush-size-slider v-model:brush-size="brushSize"></brush-size-slider>
 
-      <!-- 不透明度 -->
-      <!-- <v-slider
-        direction="vertical"
-        label="Regular"
-        color="grey-lighten-1"
-        :width="10"
-        :min="1"
-        v-model="transparent"
-        class="brush-slider"
-      ></v-slider> -->
+      <!-- ブラシ アルファ -->
+      <brush-alpha-slider v-model:brush-alpha="brushAlpha"></brush-alpha-slider>
     </v-navigation-drawer>
 
     <v-main class="bg-grey-darken-2">
       <v-container class="ml-0 pa-0">
         <main-canvas
-          :brush-color="picker"
+          :brush-color="brushColor"
           :width="1000"
           :height="1000"
           :brush-size="brushSize"
@@ -59,42 +51,74 @@
     </v-main>
 
     <!-- カラー パレット-->
-    <v-menu activator="#color-activator" anchor="start">
-      <v-color-picker v-model="picker"></v-color-picker>
+    <v-menu activator="#color-activator" anchor="start" :close-on-content-click="false">
+      <v-color-picker v-model="brushColor" dark></v-color-picker>
     </v-menu>
 
     <!-- レイヤー -->
-    <v-menu activator="#layer-activator" anchor="bottom">
+    <v-menu activator="#layer-activator" anchor="bottom" :close-on-content-click="false">
       <v-card color="grey-darken-3"> <v-card-title>レイヤー</v-card-title> </v-card>
     </v-menu>
 
     <!-- ブラシ ライブラリ -->
-    <v-menu activator="#brush-activator" anchor="end">
+    <v-menu activator="#brush-activator" anchor="end" :close-on-content-click="false">
       <v-card color="grey-darken-3"> <v-card-title>ブラシのライブラリ</v-card-title> </v-card>
     </v-menu>
   </v-app>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import MainCanvas from "./components/MainCanvas.vue";
-import BrushSlider from "./components/BrushSlider.vue";
+import BrushSizeSlider from "./components/BrushSizeSlider.vue";
+import BrushAlphaSlider from "./components/BrushAlphaSlider.vue";
+import chroma from "chroma-js";
 
 export default defineComponent({
   components: {
     MainCanvas,
-    BrushSlider,
+    BrushSizeSlider,
+    BrushAlphaSlider,
   },
 
   setup() {
-    const picker = ref("black");
-    const brushSize = ref(12);
-    const transparent = ref(1);
+    const brushColor = ref("black"); // ブラシ選択色
+    watch(brushColor, () => {
+      const colorTmp = chroma(brushColor.value);
+      brushColorRgb.value = parseColor(chroma(colorTmp.rgb()));
+      // brushAlpha.value = chroma(brushColor.value).alpha();
+    });
+
+    const brushColorRgb = ref(brushColor.value); // アルファ値を除いたブラシ選択色
+    const brushSize = ref(12); // ブラシ サイズ
+    const brushAlpha = ref(1.0); // ブラシ アルファ
+    watch(brushAlpha, () => {
+      console.log("brushColor", brushColor.value);
+      let colorTmp = chroma(brushColor.value);
+      colorTmp = colorTmp.alpha(brushAlpha.value); // ブラシ選択色のアルファ値を変更
+      const colorName = parseColor(colorTmp);
+      console.log("colorName", colorName);
+      brushColor.value = colorName; // 選択色を指定されたアルファ値に変更
+    });
+
+    const parseColor = (colorTmp: chroma.Color): string => {
+      const colorName =
+        "#" +
+        colorTmp.get("rgba.r").toString(16).padStart(2, "0") +
+        colorTmp.get("rgba.g").toString(16).padStart(2, "0") +
+        colorTmp.get("rgba.b").toString(16).padStart(2, "0") +
+        Math.round(255 * colorTmp.alpha())
+          .toString(16)
+          .padStart(2, "0");
+
+      return colorName;
+    };
 
     return {
-      picker,
+      brushColor,
+      brushColorRgb,
       brushSize,
-      transparent,
+      brushAlpha,
     };
   },
 });
