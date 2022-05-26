@@ -21,7 +21,7 @@ import {
   NativePointerEvent,
   NativePointerEventImplements,
 } from "@/core/painting/NativePointerEvent";
-import { defineComponent, onMounted, PropType, toRefs, watch } from "vue";
+import { defineComponent, onMounted, PropType, ref, toRefs, watch } from "vue";
 import { io, Socket } from "socket.io-client";
 import { BrushParameters } from "@/core/painting/brush-parameters";
 
@@ -72,11 +72,20 @@ export default defineComponent({
     onMounted(() => {
       const apiRoot = process.env.VUE_APP_API_URL;
 
+      // sokcet.io 初期化
       socket = io(apiRoot);
-      socket.on("stroke", (points: NativePointerEvent[], brushParams: BrushParameters) => {
-        // ストローク イベントを受信した。
-        receiveStroke(points, brushParams);
+      socket.on(
+        "stroke",
+        (data: { points: NativePointerEvent[]; brushParams: BrushParameters }) => {
+          // ストローク イベントを受信した。
+          receiveStroke(data);
+        }
+      );
+      socket.on("downloadCanvas", (data: { image: ArrayBuffer }) => {
+        // キャンバス ダウンロード イベントを受信した。
+        receiveDownloadCanvas(data);
       });
+
       canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
       context = canvas.getContext("2d");
 
@@ -98,6 +107,9 @@ export default defineComponent({
         paintCanvas.brush.sizeParameters.size = props.brushSize;
       });
 
+      // キャンバスをダウンロードする
+      sendDownloadCanvas();
+
       // キャンバスの描画を開始する。
       window.requestAnimationFrame(onDraw);
     });
@@ -107,7 +119,10 @@ export default defineComponent({
      * 送信後にストローク情報は消去されます。
      */
     const sendStroke = (): void => {
-      socket.emit("stroke", strokes, paintCanvas.brush.brushParameters);
+      socket.emit("stroke", {
+        points: strokes,
+        brushParams: paintCanvas.brush.brushParameters,
+      });
       strokes.length = 0;
     };
 
@@ -116,12 +131,47 @@ export default defineComponent({
      * @param points 受信したポインター イベントのリスト。
      * @param brushParams ブラシのパラメーター。
      */
-    const receiveStroke = (points: NativePointerEvent[], brushParams: BrushParameters): void => {
-      receivedPaintCanvas.brush.brushParameters = brushParams;
-      points.forEach((pe) => {
+    const receiveStroke = (data: {
+      points: NativePointerEvent[];
+      brushParams: BrushParameters;
+    }): void => {
+      receivedPaintCanvas.brush.brushParameters = data.brushParams;
+      data.points.forEach((pe) => {
         receivedPaintCanvas.update(pe);
       });
     };
+
+    const downloadUrl = ref("");
+
+    // #region キャンバス イベント
+
+    const sendUpdateCanvas = (): void => {
+      canvas.toBlob((blob) => {
+        console.log("sendUpdateCanvas", blob);
+        if (!blob) {
+          return;
+        }
+        socket.emit("updateCanvas", { image: blob });
+      });
+    };
+
+    const sendDownloadCanvas = (): void => {
+      socket.emit("downloadCanvas");
+    };
+
+    const receiveDownloadCanvas = async (data: { image: ArrayBuffer }): Promise<void> => {
+      const blob = new Blob([data.image]);
+      console.log("receiveDownloadCanvas", blob);
+      const bitmap = await createImageBitmap(blob);
+      context?.drawImage(bitmap, 0, 0);
+    };
+
+    const sendCanvasTimer = setInterval(() => {
+      console.log("sendCanvasTimer");
+      sendUpdateCanvas();
+    }, 1000 * 10);
+
+    // #endregion キャンバス イベント
 
     /**
      * ポインターが押されたときの処理を行います。
@@ -179,6 +229,7 @@ export default defineComponent({
       onPointerDown,
       onPointerMove,
       onPointerUp,
+      downloadUrl,
     };
   },
 });

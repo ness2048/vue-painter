@@ -43,7 +43,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.brush-slider.v-slider.v-input--vertical >>> .v-input__control {
+.brush-slider.v-slider.v-input--vertical:deep() .v-input__control {
   min-height: 200px; /* スライダーの高さ */
 }
 </style>

@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { computed } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 import { defineComponent, toRefs } from "vue";
 
 export default defineComponent({
@@ -38,9 +38,9 @@ export default defineComponent({
         emit("update:brushSize", value); // brushSize プロパティの更新
       },
     });
-    const isThumb = false;
-    const thumbX = 0;
-    const thumbY = 0;
+    const isThumb = ref(true);
+    const thumbX = ref(100);
+    const thumbY = ref(100);
 
     return {
       brushSizeComputed,
@@ -53,7 +53,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.brush-slider.v-slider.v-input--vertical >>> .v-input__control {
+.brush-slider.v-slider.v-input--vertical:deep() .v-input__control {
   min-height: 200px; /* スライダーの高さ */
 }
 </style>
