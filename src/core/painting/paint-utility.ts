@@ -1,3 +1,4 @@
+import { Vector2 } from "three/src/Three";
 import { Brush } from "./brush";
 import { BrushPoint } from "./brush-point";
 
@@ -19,23 +20,31 @@ export class PaintUtility {
     //  * p.pressureFactor;
     const brushSize = brush.minimumSize + (sizeParams.size - brush.minimumSize) * p.pressureFactor;
 
-    // const t = new Vector2(p.x - brushSize / 2, p.y - brushSize / 2);
-    // const sx = 0;
-    // const sy = 0;
-    // const sWidth = brush.brushTexture.width as number;
-    // const sHeight = brush.brushTexture.height as number;
-    // const dx = t.x;
-    // const dy = t.y;
-    // const dWidth = brushSize;
-    // const dHeight = brushSize;
-    // context.drawImage(brush.brushTexture, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-
-    context.beginPath();
-    context.arc(p.x, p.y, brushSize, 0, (360 * Math.PI) / 180);
-    // context.fillStyle = `rgb(0, 0, 0, 0.5)`; // brush.color;
-    context.fillStyle = brush.color;
     context.globalAlpha = p.pressureFactor;
-    context.fill();
+    context.globalCompositeOperation = "multiply";
+    if (brush.brushTexture) {
+      // #region テクスチャ
+      const t = new Vector2(p.x - brushSize / 2, p.y - brushSize / 2);
+      const sx = 0;
+      const sy = 0;
+      const sWidth = brush.brushTexture.width as number;
+      const sHeight = brush.brushTexture.height as number;
+      const dx = t.x;
+      const dy = t.y;
+      const dWidth = brushSize;
+      const dHeight = brushSize;
+      context.drawImage(brush.brushTexture, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+      // #endregion テクスチャ
+    } else {
+      // #region フィル
+      context.beginPath();
+      context.arc(p.x, p.y, brushSize, 0, (360 * Math.PI) / 180);
+      // context.fillStyle = `rgb(0, 0, 0, 0.5)`; // brush.color;
+      context.fillStyle = brush.color;
+      context.fill();
+      // #endregion フィル
+    }
+
     // context.strokeStyle = 'purple';
     // context.lineWidth = 0;
     // context.stroke();

@@ -8,12 +8,12 @@ export interface BrushParameters {
   /**
    * ブレンディング ステートを取得または設定します。
    */
-  blendState2: BlendState;
+  // blendState2: BlendState;
 
   /**
    * ブラシのテクスチャを取得または設定します。
    */
-  brushTextureUrl: string | undefined;
+  brushTextureUrl: string;
 
   /**
    * ブラシの色を表す RGB 値とα値を取得または設定します。
@@ -43,8 +43,8 @@ export interface BrushParameters {
 }
 
 export class BrushParametersImplements implements BrushParameters {
-  blendState2: BlendState = BlendState.zero;
-  brushTextureUrl: string | undefined;
+  // blendState2: BlendState = BlendState.zero;
+  brushTextureUrl = "";
   color = "black";
   distanceRatio = 0.1;
   name = "";

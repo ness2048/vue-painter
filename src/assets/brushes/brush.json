@@ -1,0 +1,49 @@
+{
+  "brushParameters": [
+  {
+    "brushTextureUrl": "images/brushes/circle.png",
+    "distanceRatio": 0.05,
+    "name": "Circle",
+    "fullName": "標準ブラシ",
+    "color": "rgba(0,0,0,51)",
+    "sizeParameters": {
+      "size": 32,
+      "minimumSizeRatio": 0,
+      "expressionStyle": "Speed"
+    }
+  }, {
+    "brushTextureUrl": "images/brushes/dots.png",
+    "distanceRatio": 0.4,
+    "name": "Dots",
+    "fullName": "ドット",
+    "color": "rgba(0,0,0,51)",
+    "sizeParameters": {
+      "size": 32,
+      "minimumSizeRatio": 0,
+      "expressionStyle": "Speed"
+    }
+  }, {
+    "brushTextureUrl": "images/brushes/pencil.png",
+    "distanceRatio": 0.2,
+    "name": "Pencil",
+    "fullName": "鉛筆",
+    "color": "rgba(0,0,0,20)",
+    "sizeParameters": {
+      "size": 3,
+      "minimumSizeRatio": 0,
+      "expressionStyle": "Speed"
+    }
+  }, {
+    "brushTextureUrl": "images/brushes/shadingOff.png",
+    "distanceRatio": 0.2,
+    "name": "ShadingOff",
+    "fullName": "ぼかし",
+    "color": "rgba(0,0,0,255)",
+    "sizeParameters": {
+      "size": 32,
+      "minimumSizeRatio": 0,
+      "expressionStyle": "Speed"
+    }
+  }
+]
+}

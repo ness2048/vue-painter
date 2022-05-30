@@ -7,10 +7,10 @@
     color="grey-lighten-1"
     class="brush-slider"
   ></v-slider>
-  <v-menu v-model="isThumb" :position-x="thumbX" :position-y="thumbY" absolute offset-y>
+  <!-- <v-menu v-model="isThumb" :position-x="thumbX" :position-y="thumbY" absolute offset-y>
     <template v-slot:activator="{}"> </template>
     <v-card color="grey-darken-3"> <v-card-title>ブラシ サイズ</v-card-title> </v-card>
-  </v-menu>
+  </v-menu> -->
 </template>
 
 <script lang="ts">

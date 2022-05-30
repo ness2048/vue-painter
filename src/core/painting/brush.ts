@@ -18,13 +18,13 @@ export class Brush {
   /**
    * ブレンディング ステートを取得または設定します。
    */
-  public get blendState2(): BlendState {
-    return this.nativeBrushParameters.blendState2;
-  }
+  // public get blendState2(): BlendState {
+  //   return this.nativeBrushParameters.blendState2;
+  // }
 
-  public set blendState2(value: BlendState) {
-    this.nativeBrushParameters.blendState2 = value;
-  }
+  // public set blendState2(value: BlendState) {
+  //   this.nativeBrushParameters.blendState2 = value;
+  // }
 
   /**
    * ブラシのテクスチャを取得または設定します。

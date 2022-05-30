@@ -62,7 +62,7 @@
 
     <!-- ブラシ ライブラリ -->
     <v-menu activator="#brush-activator" anchor="end" :close-on-content-click="false">
-      <v-card color="grey-darken-3"> <v-card-title>ブラシのライブラリ</v-card-title> </v-card>
+      <brush-library></brush-library>
     </v-menu>
   </v-app>
 </template>
@@ -72,6 +72,7 @@ import { defineComponent, ref, watch } from "vue";
 import MainCanvas from "./components/MainCanvas.vue";
 import BrushSizeSlider from "./components/BrushSizeSlider.vue";
 import BrushAlphaSlider from "./components/BrushAlphaSlider.vue";
+import BrushLibrary from "./components/BrushLibrary.vue";
 import chroma from "chroma-js";
 
 export default defineComponent({
@@ -79,6 +80,7 @@ export default defineComponent({
     MainCanvas,
     BrushSizeSlider,
     BrushAlphaSlider,
+    BrushLibrary,
   },
 
   setup() {

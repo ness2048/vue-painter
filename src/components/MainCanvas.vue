@@ -24,6 +24,8 @@ import {
 import { defineComponent, onMounted, PropType, ref, toRefs, watch } from "vue";
 import { io, Socket } from "socket.io-client";
 import { BrushParameters } from "@/core/painting/brush-parameters";
+import { useBrushStore } from "@/stores/brushStore";
+import { storeToRefs } from "pinia";
 
 export default defineComponent({
   props: {
@@ -69,6 +71,19 @@ export default defineComponent({
     let strokes: NativePointerEvent[] = [];
     let prevTimeStamp = 0;
 
+    // ストアの作成
+    const brushStore = useBrushStore();
+
+    // ストア プロパティの抽出
+    const { brushes, selectedBrush } = storeToRefs(brushStore);
+    watch(selectedBrush, () => {
+      const image = new Image();
+      image.src = selectedBrush.value.brushTextureUrl;
+      image.onload = async () => {
+        paintCanvas.brush.brushTexture = await createImageBitmap(image);
+      };
+    });
+
     onMounted(() => {
       const apiRoot = process.env.VUE_APP_API_URL;
 
@@ -105,6 +120,11 @@ export default defineComponent({
       watch(brushSize, () => {
         // ブラシサイズが変更されたとき paintCanvas.brush.size を更新する。
         paintCanvas.brush.sizeParameters.size = props.brushSize;
+      });
+
+      watch(selectedBrush, () => {
+        console.log("selectedBrush");
+        paintCanvas.brush.brushParameters = selectedBrush.value;
       });
 
       // キャンバスをダウンロードする
