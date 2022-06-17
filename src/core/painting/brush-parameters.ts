@@ -37,6 +37,11 @@ export interface BrushParameters {
   fullName: string;
 
   /**
+   * ブラシの合成方法を取得または設定します。
+   */
+  compositeOperation: GlobalCompositeOperation;
+
+  /**
    * ブラシサイズに関するパラメーターを取得または設定します。
    */
   sizeParameters: BrushSizeParameters;
@@ -49,5 +54,6 @@ export class BrushParametersImplements implements BrushParameters {
   distanceRatio = 0.1;
   name = "";
   fullName = "";
+  compositeOperation: GlobalCompositeOperation = "source-over";
   sizeParameters: BrushSizeParameters = new BrushSizeParametersImplements();
 }

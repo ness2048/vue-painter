@@ -289,7 +289,7 @@ export class PaintCanvas {
 
   // #region 履歴
   private beginStrokeHistory() {
-    console.log("onHoldComplete");
+    console.log("onHoldCompleteHistory");
   }
 
   private endStrokeHistory() {

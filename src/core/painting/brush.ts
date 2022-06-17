@@ -1,8 +1,10 @@
+import chroma from "chroma-js";
 import { BlendState } from "./blend-state";
 import { BrushParameters, BrushParametersImplements } from "./brush-parameters";
 import { BrushSizeParameters } from "./brush-size-parameters";
 import { ExpressionStyleBase } from "./expression-style-base";
 import { NoneExpressionStyle } from "./none-expression-style";
+import { PaintUtility } from "./paint-utility";
 
 /**
  * ブラシのパラメーターを表します。
@@ -14,6 +16,20 @@ export class Brush {
   private brushTextureValue?: CanvasImageSource;
 
   private expressionStyleValue: ExpressionStyleBase = NoneExpressionStyle.Instance;
+
+  private contextColorValue: chroma.Color = chroma("black");
+
+  public get contextColor(): chroma.Color {
+    return this.contextColorValue;
+  }
+
+  /**
+   * ブラシの現在の色を取得または設定します。
+   */
+  public set contextColor(value: chroma.Color) {
+    this.contextColorValue = value;
+    const c = this.contextColor;
+  }
 
   /**
    * ブレンディング ステートを取得または設定します。
@@ -47,6 +63,20 @@ export class Brush {
 
   public set color(value: string) {
     this.nativeBrushParameters.color = value;
+  }
+
+  /**
+   * ブラシの合成方法を取得します。
+   */
+  public get compositeOperation(): GlobalCompositeOperation {
+    return this.nativeBrushParameters.compositeOperation;
+  }
+
+  /**
+   * ブラシの合成方法を設定します。
+   */
+  public set compositeOperation(value: GlobalCompositeOperation) {
+    this.nativeBrushParameters.compositeOperation = value;
   }
 
   /**
@@ -127,5 +157,13 @@ export class Brush {
 
   public set expressionStyle(value: ExpressionStyleBase) {
     this.expressionStyleValue = value;
+  }
+
+  /**
+   *
+   * @returns ブラシカラーを chroma.Color 型で取得します。
+   */
+  public stringToColor(): chroma.Color {
+    return PaintUtility.stringToColor(this.color);
   }
 }

@@ -26,6 +26,7 @@ import { io, Socket } from "socket.io-client";
 import { BrushParameters } from "@/core/painting/brush-parameters";
 import { useBrushStore } from "@/stores/brushStore";
 import { storeToRefs } from "pinia";
+import { PaintUtility } from "@/core/painting/paint-utility";
 
 export default defineComponent({
   props: {
@@ -75,16 +76,15 @@ export default defineComponent({
     const brushStore = useBrushStore();
 
     // ストア プロパティの抽出
-    const { brushes, selectedBrush } = storeToRefs(brushStore);
+    const { selectedBrush } = storeToRefs(brushStore);
     watch(selectedBrush, () => {
-      const image = new Image();
-      image.src = selectedBrush.value.brushTextureUrl;
-      image.onload = async () => {
-        paintCanvas.brush.brushTexture = await createImageBitmap(image);
-      };
+      // ブラシが変更された
+      brushStore.currentTexture = brushStore.textures[selectedBrush.value.brushTextureUrl];
+      brushStore.currentColorTexture = brushStore.currentTexture;
+      paintCanvas.brush.brushTexture = brushStore.currentColorTexture;
     });
 
-    onMounted(() => {
+    onMounted(async () => {
       const apiRoot = process.env.VUE_APP_API_URL;
 
       // sokcet.io 初期化
@@ -111,9 +111,20 @@ export default defineComponent({
       }
 
       const { brushColor } = toRefs(props);
-      watch(brushColor, () => {
+      watch(brushColor, async () => {
         // ブラシカラーが変更されたとき paintCanvas.brush.color を更新する。
+        console.log("brushColor", props.brushColor);
         paintCanvas.brush.color = props.brushColor;
+        await brushStore.setSelectedColor(props.brushColor);
+        // paintCanvas.brush.brushTexture = brushStore.currentColorTexture;
+      });
+
+      const { currentColorTexture } = storeToRefs(brushStore);
+      watch(currentColorTexture, async () => {
+        // カレントカラーテクスチャが変更された
+        if (currentColorTexture) {
+          paintCanvas.brush.brushTexture = currentColorTexture.value;
+        }
       });
 
       const { brushSize } = toRefs(props);
@@ -126,6 +137,9 @@ export default defineComponent({
         console.log("selectedBrush");
         paintCanvas.brush.brushParameters = selectedBrush.value;
       });
+
+      // ブラシを読み込む
+      brushStore.fetch();
 
       // キャンバスをダウンロードする
       sendDownloadCanvas();
@@ -151,11 +165,23 @@ export default defineComponent({
      * @param points 受信したポインター イベントのリスト。
      * @param brushParams ブラシのパラメーター。
      */
-    const receiveStroke = (data: {
+    const receiveStroke = async (data: {
       points: NativePointerEvent[];
       brushParams: BrushParameters;
-    }): void => {
+    }): Promise<void> => {
       receivedPaintCanvas.brush.brushParameters = data.brushParams;
+
+      // 指定した色でフィルターしたテクスチャをPaintCahvasに登録する
+      if (data.brushParams.brushTextureUrl) {
+        const brushTexture = brushStore.textures[data.brushParams.brushTextureUrl];
+        const imgData = PaintUtility.createImageData(brushTexture);
+        const color = PaintUtility.stringToColor(data.brushParams.color);
+        const filterData = PaintUtility.createColorFilterImageData(imgData, color);
+        receivedPaintCanvas.brush.brushTexture = await createImageBitmap(filterData);
+      } else {
+        receivedPaintCanvas.brush.brushTexture = undefined;
+      }
+
       data.points.forEach((pe) => {
         receivedPaintCanvas.update(pe);
       });
@@ -193,15 +219,17 @@ export default defineComponent({
 
     // #endregion キャンバス イベント
 
+    let strokeMode: "none" | "paint" | "erase" = "none";
+
     /**
      * ポインターが押されたときの処理を行います。
      * @param pe ポインター イベント。
      */
     const onPointerDown = (pe: PointerEvent): void => {
-      // const np = fromPointerEvent(pe);
       paintCanvas.update(pe);
       strokes.slice(0);
       strokes.push(NativePointerEventImplements.fromPointerEvent(pe));
+      strokeMode = "paint";
       pe.preventDefault();
     };
 
@@ -210,8 +238,10 @@ export default defineComponent({
      * @param pe ポインター イベント。
      */
     const onPointerMove = (pe: PointerEvent): void => {
-      paintCanvas.update(pe);
-      strokes.push(NativePointerEventImplements.fromPointerEvent(pe));
+      if (strokeMode === "paint") {
+        paintCanvas.update(pe);
+        strokes.push(NativePointerEventImplements.fromPointerEvent(pe));
+      }
       pe.preventDefault();
     };
 
@@ -223,6 +253,7 @@ export default defineComponent({
       paintCanvas.update(pe);
       strokes.push(NativePointerEventImplements.fromPointerEvent(pe));
       sendStroke();
+      strokeMode = "none";
       pe.preventDefault();
     };
 

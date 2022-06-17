@@ -76,7 +76,7 @@ export default defineComponent({
     const { brushes } = storeToRefs(brushStore);
 
     // ストア データの読み込み
-    brushStore.fetch();
+    // brushStore.fetch();
 
     console.log(brushes);
 

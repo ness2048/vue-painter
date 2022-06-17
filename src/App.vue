@@ -74,6 +74,7 @@ import BrushSizeSlider from "./components/BrushSizeSlider.vue";
 import BrushAlphaSlider from "./components/BrushAlphaSlider.vue";
 import BrushLibrary from "./components/BrushLibrary.vue";
 import chroma from "chroma-js";
+import { PaintUtility } from "./core/painting/paint-utility";
 
 export default defineComponent({
   components: {
@@ -86,35 +87,23 @@ export default defineComponent({
   setup() {
     const brushColor = ref("black"); // ブラシ選択色
     watch(brushColor, () => {
+      // ブラシ カラーが変更された
       const colorTmp = chroma(brushColor.value);
-      brushColorRgb.value = parseColor(chroma(colorTmp.rgb()));
-      // brushAlpha.value = chroma(brushColor.value).alpha();
+      brushColorRgb.value = PaintUtility.parseColor(chroma(colorTmp.rgb()));
     });
 
     const brushColorRgb = ref(brushColor.value); // アルファ値を除いたブラシ選択色
     const brushSize = ref(12); // ブラシ サイズ
     const brushAlpha = ref(1.0); // ブラシ アルファ
     watch(brushAlpha, () => {
+      // ブラシ アルファが変更された
       console.log("brushColor", brushColor.value);
       let colorTmp = chroma(brushColor.value);
       colorTmp = colorTmp.alpha(brushAlpha.value); // ブラシ選択色のアルファ値を変更
-      const colorName = parseColor(colorTmp);
+      const colorName = PaintUtility.parseColor(colorTmp);
       console.log("colorName", colorName);
       brushColor.value = colorName; // 選択色を指定されたアルファ値に変更
     });
-
-    const parseColor = (colorTmp: chroma.Color): string => {
-      const colorName =
-        "#" +
-        colorTmp.get("rgba.r").toString(16).padStart(2, "0") +
-        colorTmp.get("rgba.g").toString(16).padStart(2, "0") +
-        colorTmp.get("rgba.b").toString(16).padStart(2, "0") +
-        Math.round(255 * colorTmp.alpha())
-          .toString(16)
-          .padStart(2, "0");
-
-      return colorName;
-    };
 
     return {
       brushColor,
