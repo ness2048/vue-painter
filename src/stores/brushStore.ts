@@ -4,21 +4,36 @@ import { BrushParametersImplements } from "@/core/painting/brush-parameters";
 import { PaintUtility } from "@/core/painting/paint-utility";
 import chroma from "chroma-js";
 
-export const useBrushStore = defineStore("storeId", {
+export const useBrushStore = defineStore("brushStore", {
   // 新規状態を返す関数
   state: () => ({
     brushes: [new BrushParametersImplements()],
     textures: {} as { [key: string]: ImageBitmap },
     selectedBrush: new BrushParametersImplements(),
     selectedColor: "",
-    currentTexture: undefined as ImageBitmap | undefined,
     currentColorTexture: undefined as ImageBitmap | undefined,
   }),
-  // 任意のゲッター
-  getters: {},
-  // 任意アクション
+
+  // ゲッター
+  getters: {
+    /**
+     * 現在選択されているブラシのテクスチャを取得します。
+     * @returns ブラシテクスチャ
+     */
+    currentTexture(): ImageBitmap | undefined {
+      const url = this.selectedBrush.brushTextureUrl;
+      return url ? this.textures[url as string] : undefined;
+    },
+  },
+
+  // アクション
   actions: {
-    async setSelectedColor(color: string) {
+    /**
+     * 指定した色でフィルターをかけた currentTexture を currentColorTexture に格納します。
+     * 指定した色は selectedColor に設定されます。
+     * @param color 色
+     */
+    async filterColorTexture(color: string) {
       if (!chroma.valid(color)) {
         // 不正な色
         return;
@@ -32,11 +47,13 @@ export const useBrushStore = defineStore("storeId", {
         const imgData = PaintUtility.createImageData(this.currentTexture);
         const filterData = PaintUtility.createColorFilterImageData(imgData, colorTemp);
         this.currentColorTexture = await createImageBitmap(filterData);
+      } else {
+        this.currentColorTexture = undefined;
       }
     },
 
     /**
-     * ブラシ データを読み込みます。
+     * ブラシ データとテクスチャを読み込みます。
      */
     async fetch() {
       // JSON データからブラシデータを読み込む
@@ -45,16 +62,22 @@ export const useBrushStore = defineStore("storeId", {
       // ブラシのテクスチャを読み込む
       const result = await Promise.all(
         this.brushes.map(async (b) => {
-          const promise = new Promise<void>((resolve) => {
-            const img = new Image();
-            img.onload = async () => {
-              const bmp = await createImageBitmap(img);
-              this.textures[b.brushTextureUrl] = bmp;
-              resolve();
-            };
-            img.src = b.brushTextureUrl;
-          });
-          return promise;
+          if (!b.brushTextureUrl) {
+            return;
+          }
+          const url = b.brushTextureUrl;
+          if (b.brushTextureUrl) {
+            const promise = new Promise<void>((resolve) => {
+              const img = new Image();
+              img.onload = async () => {
+                const bmp = await createImageBitmap(img);
+                this.textures[url] = bmp;
+                resolve();
+              };
+              img.src = url;
+            });
+            return promise;
+          }
         })
       );
     },

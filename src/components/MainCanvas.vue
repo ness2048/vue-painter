@@ -31,6 +31,13 @@ import { PaintUtility } from "@/core/painting/paint-utility";
 export default defineComponent({
   props: {
     /**
+     * ブラシのアルファ値。
+     */
+    brushAlpha: {
+      type: Number as PropType<number>,
+      default: () => 1,
+    },
+    /**
      * ブラシの色を設定します。
      */
     brushColor: {
@@ -60,7 +67,12 @@ export default defineComponent({
     },
   },
 
-  setup(props) {
+  emits: [
+    "update:brushAlpha", // brushAlpha プロパティの更新
+    "update:brushSize", // brushSize プロパティの更新
+  ],
+
+  setup(props, { emit }) {
     const FPS = 60;
     const frameTime = 1 / FPS;
     let canvas!: HTMLCanvasElement;
@@ -72,16 +84,44 @@ export default defineComponent({
     let strokes: NativePointerEvent[] = [];
     let prevTimeStamp = 0;
 
+    const { brushAlpha, brushColor, brushSize } = toRefs(props);
+    watch(brushAlpha, async () => {
+      // ブラシアルファが変更されたとき paintCanvas.brush.alpha を更新する。
+      paintCanvas.brush.alpha = props.brushAlpha;
+    });
+
+    watch(brushColor, async () => {
+      // ブラシカラーが変更されたとき paintCanvas.brush.color を更新する。
+      paintCanvas.brush.color = props.brushColor;
+      await brushStore.filterColorTexture(props.brushColor);
+    });
+
+    watch(brushSize, () => {
+      // ブラシサイズが変更されたとき paintCanvas.brush.size を更新する。
+      paintCanvas.brush.sizeParameters.size = props.brushSize;
+    });
+
     // ストアの作成
     const brushStore = useBrushStore();
 
     // ストア プロパティの抽出
-    const { selectedBrush } = storeToRefs(brushStore);
-    watch(selectedBrush, () => {
-      // ブラシが変更された
-      brushStore.currentTexture = brushStore.textures[selectedBrush.value.brushTextureUrl];
-      brushStore.currentColorTexture = brushStore.currentTexture;
-      paintCanvas.brush.brushTexture = brushStore.currentColorTexture;
+    const { selectedBrush, currentColorTexture } = storeToRefs(brushStore);
+    watch(selectedBrush, async () => {
+      // ブラシが変更されたとき brushParameters とテクスチャを更新する。
+      await brushStore.filterColorTexture(props.brushColor);
+      paintCanvas.brush.brushParameters = selectedBrush.value;
+      // paintCanvas.brush.alpha = selectedBrush.value.alpha;
+      paintCanvas.brush.color = props.brushColor;
+      // paintCanvas.brush.brushTexture = currentColorTexture.value;
+      emit("update:brushAlpha", selectedBrush.value.alpha);
+      emit("update:brushSize", selectedBrush.value.sizeParameters.size);
+    });
+
+    watch(currentColorTexture, async () => {
+      // カレントカラーテクスチャが変更された
+      if (currentColorTexture) {
+        paintCanvas.brush.brushTexture = currentColorTexture.value;
+      }
     });
 
     onMounted(async () => {
@@ -110,36 +150,11 @@ export default defineComponent({
         receivedPaintCanvas = new PaintCanvas(context, canvasImage);
       }
 
-      const { brushColor } = toRefs(props);
-      watch(brushColor, async () => {
-        // ブラシカラーが変更されたとき paintCanvas.brush.color を更新する。
-        console.log("brushColor", props.brushColor);
-        paintCanvas.brush.color = props.brushColor;
-        await brushStore.setSelectedColor(props.brushColor);
-        // paintCanvas.brush.brushTexture = brushStore.currentColorTexture;
-      });
-
-      const { currentColorTexture } = storeToRefs(brushStore);
-      watch(currentColorTexture, async () => {
-        // カレントカラーテクスチャが変更された
-        if (currentColorTexture) {
-          paintCanvas.brush.brushTexture = currentColorTexture.value;
-        }
-      });
-
-      const { brushSize } = toRefs(props);
-      watch(brushSize, () => {
-        // ブラシサイズが変更されたとき paintCanvas.brush.size を更新する。
-        paintCanvas.brush.sizeParameters.size = props.brushSize;
-      });
-
-      watch(selectedBrush, () => {
-        console.log("selectedBrush");
-        paintCanvas.brush.brushParameters = selectedBrush.value;
-      });
-
       // ブラシを読み込む
-      brushStore.fetch();
+      await brushStore.fetch();
+
+      // 標準ブラシを選択
+      selectedBrush.value = brushStore.brushes.find((b) => b.name === "Normal") as BrushParameters;
 
       // キャンバスをダウンロードする
       sendDownloadCanvas();
@@ -288,9 +303,6 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-* {
-  /* touch-action: pan-x pan-y; */
-}
 #main-canvas {
   background-color: white;
 }

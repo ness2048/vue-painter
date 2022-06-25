@@ -18,14 +18,24 @@ export class PaintUtility {
     }
     const sizeParams = brush.sizeParameters;
     const pressureFactor = p.pressureFactor > 0 ? p.pressureFactor : 0;
+    // TODO: expressionStyle 実装すること。
     // const brushSize = sizeParams.minimumSize
     //   + sizeParams.expressionStyle.apply(p, (sizeParams.size - sizeParams.minimumSize))
     //  * pressureFactor;
     const brushSize = brush.minimumSize + (sizeParams.size - brush.minimumSize) * pressureFactor;
 
-    const brushColor = PaintUtility.stringToColor(brush.color);
+    // const brushColor = PaintUtility.stringToColor(brush.color);
 
-    context.globalAlpha = pressureFactor;
+    // TODO: ブレンドを実装すること。
+    // const pixel = context.getImageData(p.x, p.y, 1, 1);
+    // const r = pixel.data[0];
+    // const g = pixel.data[1];
+    // const b = pixel.data[2];
+    // const a = pixel.data[3];
+    // const pixelColor = chroma([r, g, b, a], "rgb");
+    // chroma.mix(brushColor, pixelColor, 0.5);
+
+    context.globalAlpha = pressureFactor * brush.alpha;
     context.globalCompositeOperation = brush.compositeOperation; // 合成方法
     if (brush.brushTexture) {
       // テクスチャブラシをレンダリング
@@ -39,7 +49,7 @@ export class PaintUtility {
       const dy = t.y;
       const dWidth = brushSize;
       const dHeight = brushSize;
-      context.globalAlpha = pressureFactor * brushColor.alpha();
+      // context.globalAlpha = pressureFactor * brushColor.alpha();
       context.drawImage(brush.brushTexture, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     } else {
       // フィル ブラシをレンダリング

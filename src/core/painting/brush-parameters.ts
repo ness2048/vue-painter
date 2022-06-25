@@ -1,4 +1,3 @@
-import { BlendState } from "./blend-state";
 import { BrushSizeParameters, BrushSizeParametersImplements } from "./brush-size-parameters";
 
 /**
@@ -6,17 +5,17 @@ import { BrushSizeParameters, BrushSizeParametersImplements } from "./brush-size
  */
 export interface BrushParameters {
   /**
-   * ブレンディング ステートを取得または設定します。
+   * アルファ値。
    */
-  // blendState2: BlendState;
+  alpha: number;
 
   /**
-   * ブラシのテクスチャを取得または設定します。
+   * ブラシのテクスチャ。
    */
-  brushTextureUrl: string;
+  brushTextureUrl?: string;
 
   /**
-   * ブラシの色を表す RGB 値とα値を取得または設定します。
+   * ブラシの色を表す RGB 値とα値。
    */
   color: string;
 
@@ -48,8 +47,8 @@ export interface BrushParameters {
 }
 
 export class BrushParametersImplements implements BrushParameters {
-  // blendState2: BlendState = BlendState.zero;
-  brushTextureUrl = "";
+  alpha = 1;
+  brushTextureUrl?: string;
   color = "black";
   distanceRatio = 0.1;
   name = "";

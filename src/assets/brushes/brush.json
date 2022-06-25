@@ -1,11 +1,10 @@
 {
   "brushParameters": [
     {
-      "brushTextureUrl": "",
+      "alpha": 1,
       "distanceRatio": 0.05,
       "name": "Normal",
       "fullName": "標準ブラシ",
-      "color": "#000000",
       "compositeOperation": "source-over",
       "sizeParameters": {
         "size": 32,
@@ -13,11 +12,10 @@
         "expressionStyle": "Speed"
       }
     }, {
-      "brushTextureUrl": "",
+      "alpha": 0.01,
       "distanceRatio": 0.05,
       "name": "Multiply",
-      "fullName": "乗算",
-      "color": "#000000",
+      "fullName": "水彩",
       "compositeOperation": "multiply",
       "sizeParameters": {
         "size": 32,
@@ -25,23 +23,22 @@
         "expressionStyle": "Speed"
       }
     }, {
-      "brushTextureUrl": "",
+      "alpha": 1,
       "distanceRatio": 0.05,
       "name": "ColorDodge",
       "fullName": "覆い焼き",
-      "color": "#000000",
       "compositeOperation": "color-dodge",
       "sizeParameters": {
         "size": 32,
         "minimumSizeRatio": 0,
         "expressionStyle": "Speed"
       }
-    }, {
+  }, {
+    "alpha": 1,
     "brushTextureUrl": "images/brushes/circle.png",
     "distanceRatio": 0.05,
     "name": "Circle",
     "fullName": "丸ブラシ",
-    "color": "#000000",
     "compositeOperation": "source-over",
     "sizeParameters": {
       "size": 32,
@@ -49,11 +46,11 @@
       "expressionStyle": "Speed"
     }
   }, {
+    "alpha": 1,
     "brushTextureUrl": "images/brushes/dots.png",
     "distanceRatio": 0.05,
     "name": "Dots",
     "fullName": "ドット",
-    "color": "#000000",
     "compositeOperation": "source-over",
     "sizeParameters": {
       "size": 100,
@@ -61,23 +58,23 @@
       "expressionStyle": "Speed"
     }
   }, {
+    "alpha": 1,
     "brushTextureUrl": "images/brushes/pencil.png",
     "distanceRatio": 0.2,
     "name": "Pencil",
     "fullName": "鉛筆",
-    "color": "#000000",
-    "compositeOperation": "source-over",
+    "compositeOperation": "multiply",
     "sizeParameters": {
       "size": 3,
       "minimumSizeRatio": 0,
       "expressionStyle": "Speed"
     }
   }, {
+    "alpha": 0.1,
     "brushTextureUrl": "images/brushes/shadingOff.png",
     "distanceRatio": 0.05,
     "name": "ShadingOff",
     "fullName": "ぼかし",
-    "color": "#00000011",
     "compositeOperation": "source-over",
     "sizeParameters": {
       "size": 100,
@@ -85,12 +82,11 @@
       "expressionStyle": "Speed"
     }
   }, {
-    "brushTextureUrl": "",
+    "alpha": 1,
     "distanceRatio": 0.05,
     "name": "Eraser",
     "fullName": "消しゴム",
-    "color": "#FFFFFF",
-    "compositeOperation": "source-over",
+    "compositeOperation": "destination-out",
     "sizeParameters": {
       "size": 100,
       "minimumSizeRatio": 0.2,

@@ -1,7 +1,7 @@
 <template>
   <v-slider
     v-model="brushAlphaComputed"
-    :min="0.0"
+    :min="0.01"
     :max="1.0"
     direction="vertical"
     color="grey-lighten-1"
@@ -20,7 +20,7 @@ export default defineComponent({
      */
     brushAlpha: {
       type: Number,
-      default: () => 0.5, // ブラシのデフォルト アルファ値
+      default: () => 1.0, // ブラシのデフォルト アルファ値
     },
   },
 

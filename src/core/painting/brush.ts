@@ -1,5 +1,4 @@
 import chroma from "chroma-js";
-import { BlendState } from "./blend-state";
 import { BrushParameters, BrushParametersImplements } from "./brush-parameters";
 import { BrushSizeParameters } from "./brush-size-parameters";
 import { ExpressionStyleBase } from "./expression-style-base";
@@ -17,35 +16,20 @@ export class Brush {
 
   private expressionStyleValue: ExpressionStyleBase = NoneExpressionStyle.Instance;
 
-  private contextColorValue: chroma.Color = chroma("black");
-
-  public get contextColor(): chroma.Color {
-    return this.contextColorValue;
+  public get alpha(): number {
+    return this.nativeBrushParameters.alpha;
   }
 
   /**
-   * ブラシの現在の色を取得または設定します。
+   * ブラシのアルファ値を取得または設定します。
    */
-  public set contextColor(value: chroma.Color) {
-    this.contextColorValue = value;
-    const c = this.contextColor;
+  public set alpha(value: number) {
+    this.nativeBrushParameters.alpha = value;
   }
-
-  /**
-   * ブレンディング ステートを取得または設定します。
-   */
-  // public get blendState2(): BlendState {
-  //   return this.nativeBrushParameters.blendState2;
-  // }
-
-  // public set blendState2(value: BlendState) {
-  //   this.nativeBrushParameters.blendState2 = value;
-  // }
 
   /**
    * ブラシのテクスチャを取得または設定します。
    */
-
   public get brushTexture(): CanvasImageSource | undefined {
     return this.brushTextureValue;
   }
@@ -55,7 +39,7 @@ export class Brush {
   }
 
   /**
-   * ブラシの色を表す RGB 値とα値を取得または設定します。
+   * ブラシの色を表す RGB 値を取得または設定します。
    */
   public get color(): string {
     return this.nativeBrushParameters.color;

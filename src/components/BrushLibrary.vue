@@ -9,12 +9,12 @@
         :selected="selectedItem"
       >
         <v-list-item
-          v-for="(brush, i) in brushes"
+          v-for="(brush, i) in availableBrushes()"
           :key="i"
           :value="brush"
-          active-color="primary"
           variant="plain"
           @click="selectItem(brush)"
+          active
         >
           <v-list-item-avatar start>
             <v-icon icon="mdi-brush"></v-icon>
@@ -41,13 +41,19 @@ export default defineComponent({
     brush: {
       type: Object as PropType<BrushParametersImplements>,
     },
+    /**
+     * ライブラリに表示しないブラシの配列を指定します。
+     */
+    excludes: {
+      type: Object as PropType<string[]>,
+    },
   },
 
   emits: ["update:brush"], // brush プロパティの更新
 
   setup(props, { emit }) {
     // コンポーネント プロパティの抽出
-    const { brush } = toRefs(props);
+    const { brush, excludes } = toRefs(props);
     const brushComputed = computed({
       get: () => brush.value,
       set: (value) => {
@@ -56,16 +62,15 @@ export default defineComponent({
     });
 
     const selectedItem = ref([]);
-    watch(
-      selectedItem,
-      () => {
-        console.log(selectedItem);
-      },
-      { deep: true }
-    );
+    // watch(
+    //   selectedItem,
+    //   () => {
+    //     console.log(selectedItem);
+    //   },
+    //   { deep: true }
+    // );
 
     const selectItem = (item: BrushParameters) => {
-      console.log(item);
       brushStore.selectedBrush = item;
     };
 
@@ -74,15 +79,16 @@ export default defineComponent({
 
     // ストア プロパティの抽出
     const { brushes } = storeToRefs(brushStore);
+    // excludes が含まれないブラシのリストを抽出
+    const availableBrushes = () =>
+      brushes.value.filter((b) => excludes.value?.find((e) => b.name !== e));
 
     // ストア データの読み込み
     // brushStore.fetch();
 
-    console.log(brushes);
-
     return {
       brushComputed,
-      brushes,
+      availableBrushes,
       selectedItem,
       selectItem,
     };
