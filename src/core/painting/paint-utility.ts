@@ -24,8 +24,6 @@ export class PaintUtility {
     //  * pressureFactor;
     const brushSize = brush.minimumSize + (sizeParams.size - brush.minimumSize) * pressureFactor;
 
-    // const brushColor = PaintUtility.stringToColor(brush.color);
-
     // TODO: ブレンドを実装すること。
     // const pixel = context.getImageData(p.x, p.y, 1, 1);
     // const r = pixel.data[0];
@@ -49,7 +47,6 @@ export class PaintUtility {
       const dy = t.y;
       const dWidth = brushSize;
       const dHeight = brushSize;
-      // context.globalAlpha = pressureFactor * brushColor.alpha();
       context.drawImage(brush.brushTexture, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     } else {
       // フィル ブラシをレンダリング
